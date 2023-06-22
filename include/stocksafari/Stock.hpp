@@ -17,6 +17,8 @@ namespace StockSafari {
 
             const std::string get_name() { return _name; }
 
+            const double get_value() { return _values.back().get_value(); }
+
             const std::vector<StockValue> get_values() { return _values; }
 
             void add_value(double value) { _values.push_back(StockValue(value)); }
