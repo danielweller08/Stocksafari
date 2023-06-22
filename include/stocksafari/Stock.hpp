@@ -21,7 +21,7 @@ namespace StockSafari {
 
             const std::vector<StockValue> get_values() { return _values; }
 
-            void add_value(double value) { _values.push_back(StockValue(value)); }
+            void add_value(StockValue value) { _values.push_back(value); }
 
         private:
             /// @brief Id
