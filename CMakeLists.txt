@@ -67,7 +67,7 @@ include(GoogleTest)
 # Enable GoogleTest
 enable_testing()
 
-# # Declare test program testController
-# add_executable(testController unittests/testController.cpp ${SRC_FILES})
-# target_link_libraries(testController GTest::gtest_main)
-# gtest_discover_tests(testController)
+# Declare test program testController
+add_executable(testController tests/testController.cpp ${SRC_FILES})
+target_link_libraries(testController GTest::gtest_main)
+gtest_discover_tests(testController)
