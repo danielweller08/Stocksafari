@@ -11,25 +11,7 @@ using namespace std;
 namespace StockSafari {
     class Controller {
         public:
-            Controller() {
-                // TODO: Initiale Stocks erstellen (Für initialValue erstmal 0 eintragen)
-                // 1. Apple - Snapple - APPL
-                // 2. Microsoft - Microhard - MSFT
-                // 3. Amazon - Amazoo - AMZN
-                // 4. Alphabet (Google) - Alphabutt -  GOOG
-                // 5. Facebook - Facebark - META
-                // 6. Berkshire Hathaway - Berkshire Hataway - BRK.A
-                // 7. JPMorgan Chase - JPMoney Chase - JPM
-                // 8. Procter & Gamble - Procter & Gamble With It - PG
-                // 9. Visa - Vroom vroom - V
-                // 10. Walmart - Wallyworld - WMT
-                // 11. Mastercard - Masterlord - MA
-                // 12. ExxonMobil - Exxtra money Mobil - XOM
-                // 13. Nestle - Noodle - NESM
-                // 14. AT&T - A-Team & T - T
-                // 15. Pfizer - Pfeiffer - PFE
-                // 16. Intel - Intellimouse - INTC
-            }
+            Controller();
 
             const vector<Stock> get_stocks();
 
