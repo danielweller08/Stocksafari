@@ -32,6 +32,10 @@ add_executable(demo
   ${SRC_FILES}
 )
 
+# Füge die OpenSSL-Bibliotheken hinzu
+target_link_libraries(demo PRIVATE ssl crypto)
+
+
 # # Demo pybind
 # pybind11_add_module(stadt_land_fluss
 #   examples/demo_pybind.cpp
@@ -69,5 +73,5 @@ enable_testing()
 
 # Declare test program testController
 add_executable(testController tests/testController.cpp ${SRC_FILES})
-target_link_libraries(testController GTest::gtest_main)
+target_link_libraries(testController GTest::gtest_main ssl crypto)
 gtest_discover_tests(testController)

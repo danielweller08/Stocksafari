@@ -42,7 +42,20 @@ namespace StockSafari {
             // Balance prüfen und dann reduzieren
             Account withdraw(string username, double amount);
 
+            /// @brief Generates a jwt token on behalf of the given username.
+            /// @return The JWT token.
+            const string generate_token(string username);
+
+            /// @brief Validates and decodes a jwt token and returns the username.
+            /// @param token The JWT token.
+            /// @return 
+            const string decode_token(string token);
+
         private:
+            /// @brief 64-byte secret string to encode and decode JWT tokens with.
+            /// @return The secret string.
+            static const string get_jwt_secret() { return "7a9fe8a26f2c56b89f25d0a642dc9ae47d6eaf1a5b88002b95a9e0dcb64d6e84"; }
+
             vector<Account> _accounts;
 
             vector<Stock> _stocks;
