@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <stocksafari/Controller.hpp>
+#include <iostream>
 
 using namespace StockSafari;
 
