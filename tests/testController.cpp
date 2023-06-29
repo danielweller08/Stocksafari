@@ -8,18 +8,12 @@ TEST(ControllerTest, Buy_Stock) {
     Controller c;
     std::string token = c.registerAccount("Daniel", "123456");
     Account& person1 = c.get_account("Daniel", token);
-    std::string token = c.registerAccount("Daniel", "123456");
-    Account& person1 = c.get_account("Daniel", token);
 
     c.set_stockValue("APPL", 10);
 
     c.deposit(person1.get_username(), 10, token);
     EXPECT_THROW(c.buy_stock("APPL", 2, person1.get_username(), token) , invalid_argument);
-    c.deposit(person1.get_username(), 10, token);
-    EXPECT_THROW(c.buy_stock("APPL", 2, person1.get_username(), token) , invalid_argument);
 
-    c.deposit(person1.get_username(), 10, token);
-    Account& acc = c.buy_stock("APPL", 2, person1.get_username(), token);
     c.deposit(person1.get_username(), 10, token);
     Account& acc = c.buy_stock("APPL", 2, person1.get_username(), token);
     EXPECT_EQ(acc.get_balance(), 0);
