@@ -32,6 +32,32 @@ TEST(ControllerTest, GetAccountTest) {
     EXPECT_THROW(c.get_account("Bob"), invalid_argument);
 }
 
+TEST(ControllerTest, DepositTest) {
+    Controller c;
+    Account& account = c.create_account("Alice", "qwerty123");
+
+    c.deposit("Alice", 100);
+    EXPECT_EQ(100, account.get_balance());
+    c.deposit("Alice", 42);
+    EXPECT_EQ(142, account.get_balance());
+
+    EXPECT_THROW(c.deposit("Bob", 999), invalid_argument);
+}
+
+TEST(ControllerTest, WithdrawTest) {
+    Controller c;
+    Account& account = c.create_account("Alice", "qwerty123");
+     
+    EXPECT_THROW(c.withdraw("Alice", 100), invalid_argument);
+    EXPECT_THROW(c.withdraw("Bob", 100), invalid_argument);
+    
+    c.deposit("Alice", 300);
+    c.withdraw("Alice", 100);
+    EXPECT_EQ(200, account.get_balance());
+    c.withdraw("Alice", 200);
+    EXPECT_EQ(0, account.get_balance());
+}
+
 TEST(ControllerTest, Authentication_Works) {
     Controller c;
     auto token = c.generate_token("TEST");
