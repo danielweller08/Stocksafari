@@ -19,7 +19,7 @@ TEST(ControllerTest, CreateAccountTest) {
     Account& account = c.get_account("Alice", token);
     EXPECT_EQ(account.get_username(), "Alice");
     EXPECT_EQ(account.get_password(), "qwerty123");
-    EXPECT_THROW(c.registerAccount("Alice", "asdf"), invalid_argument);
+    EXPECT_THROW(c.registerAccount("Alice", token), invalid_argument);
 }
 
 TEST(ControllerTest, GetAccountTest) {
