@@ -3,6 +3,7 @@
 #include <stocksafari/AccountStock.hpp>
 #include <stocksafari/Account.hpp>
 #include <stocksafari/Controller.hpp>
+#include <iostream>
 
 
 using namespace StockSafari;
@@ -16,5 +17,7 @@ int main() {
 
     Account a = Account("Daniel", "Damyan");
 
-    Controller c;   
+    std::cout << a.get_username();
+
+    Controller c;
 }
