@@ -22,7 +22,7 @@ namespace StockSafari {
             // 1. Checkt Balance
             // 2. Legt AccountStock an
             // 3. Reduziert Balance
-            Account buy_stock(string stockId, double quantity);
+            Account& buy_stock(string stockId, double quantity);
 
             // - Nur einen Teil verkaufen?
             // 	1. Neuen AccountStock anlegen
@@ -32,15 +32,17 @@ namespace StockSafari {
             // - Alles verkaufen?
             // 	1. AccountStock Sold auf true setzen, SellValue, SellDate usw.
             // 	2. Balance erhöhen
-            Account sell_stock(string stockId, double quantity);
+            Account& sell_stock(string stockId, double quantity);
 
-            Account get_account(string username);
+            Account& get_account(string username);
+
+            Account& create_account(string username, string password);
 
             // Balance erhöhen
-            Account deposit(string username, double amount);
+            Account& deposit(string username, double amount);
 
             // Balance prüfen und dann reduzieren
-            Account withdraw(string username, double amount);
+            Account& withdraw(string username, double amount);
 
             /// @brief Generates a jwt token on behalf of the given username.
             /// @return The JWT token.

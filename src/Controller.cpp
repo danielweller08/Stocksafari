@@ -1,4 +1,5 @@
 #include <stocksafari/Controller.hpp>
+#include <stdexcept>
 #include <jwt-cpp/jwt.h>
 
 using namespace std;
@@ -22,6 +23,44 @@ namespace StockSafari {
         _stocks.push_back(Stock("T", "A-Team & T", 0));
         _stocks.push_back(Stock("PFE", "Pfeiffer", 0));
         _stocks.push_back(Stock("INTC", "Intellimouse", 0));
+    }
+
+    Account& Controller::get_account(string username) {
+        if(_accounts.size() == 0) {
+            throw invalid_argument("Account mit dem Username " + username + " existiert nicht!");
+        }
+
+        for (int i = 0; i < _accounts.size(); i++) {
+            if (_accounts[i].get_username() == username) {
+                return _accounts[i];
+            }
+        }
+        throw invalid_argument("Account mit dem Username " + username + " existiert nicht!");
+    }
+
+    Account& Controller::create_account(string username, string password) {
+        for(Account account : _accounts) {
+            if (account.get_username() == username) {
+                throw invalid_argument("Account mit dem Username " + username + " existiert!"); 
+            } 
+        }
+        _accounts.push_back(Account(username, password));
+        return get_account(username);
+    }
+
+    Account& Controller::deposit(string username, double amount) {
+        Account& account = get_account(username);
+        account.set_balance(account.get_balance() + amount);
+        return account;   
+    }
+
+    Account& Controller::withdraw(string username, double amount) {
+        Account& account = get_account(username);
+        if (account.get_balance() < amount) {
+            throw invalid_argument("Du hast nicht genug Guthaben!");
+        }
+        account.set_balance(account.get_balance() - amount);
+        return account;
     }
 
     const string Controller::generate_token(string username) {

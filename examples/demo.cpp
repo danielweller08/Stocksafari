@@ -14,9 +14,14 @@ int main() {
 
     AccountStock as = AccountStock(stock, 10);
 
-    Account a = Account("Daniel", "Damyan");
+    // Account a = Account("Daniel", "Damyan");
 
-    Controller c;   
+    Controller c;  
+
+    Account a = c.create_account("Damyan", "1234");
+
+    a = c.deposit("Damyan", 500);
+    a = c.withdraw("Damyan", 1);
 
     // Token test.
     auto token = c.generate_token("Test_Username");
