@@ -25,7 +25,7 @@ int main() {
     c.withdraw("Damyan", 1, token);
 
     // Token test.
-    auto token = c.generate_token("Test_Username");
+    token = c.generate_token("Test_Username");
     std::cout << "Token: " << token << std::endl;
     std::cout << "Username after verification: " << c.try_decode_token(token) << std::endl;
 }
