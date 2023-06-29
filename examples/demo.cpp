@@ -15,17 +15,11 @@ int main() {
 
     AccountStock as = AccountStock(stock, 10);
 
-    // Account a = Account("Daniel", "Damyan");
-
-    std::cout << a.get_username();
-
     Controller c;
 
     c.set_stockValue("APPL", 1);
 
-    Controller c;  
-
-    Account a = c.create_account("Damyan", "1234");
+    Account& a = c.create_account("Damyan", "1234");
 
     a = c.deposit("Damyan", 500);
     a = c.withdraw("Damyan", 1);

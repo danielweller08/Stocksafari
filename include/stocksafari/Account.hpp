@@ -21,7 +21,7 @@ namespace StockSafari {
             const double get_balance() { return _balance; }
             void set_balance(double value) { _balance = value; }
 
-            const std::vector<AccountStock> get_portfolio() { return _portfolio; }
+            std::vector<AccountStock>& get_portfolio() { return _portfolio; }
             void add_stock(AccountStock value) { _portfolio.push_back(value); }
 
         private:

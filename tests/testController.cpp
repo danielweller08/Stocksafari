@@ -13,24 +13,19 @@ TEST(ControllerTest, Buy_Stock) {
     // c.set_stockValue("APPL", 10);
 }
 
-// Test that quantity is too high
-TEST(ControllerTest, Buy_Stock) {
-
-}
-
-TEST(TestController, CreateAccountTest) {
+TEST(ControllerTest, CreateAccountTest) {
     Controller c;
-    Account account = c.create_account("Alice", "qwerty123");
+    Account& account = c.create_account("Alice", "qwerty123");
 
     EXPECT_EQ(account.get_username(), "Alice");
     EXPECT_EQ(account.get_password(), "qwerty123");
     EXPECT_THROW(c.create_account("Alice", "asdf"), invalid_argument);
 }
 
-TEST(TestController, GetAccountTest) {
+TEST(ControllerTest, GetAccountTest) {
     Controller c;
-    Account account = c.create_account("Alice", "qwerty123");
-    Account user = c.get_account("Alice");
+    Account& account = c.create_account("Alice", "qwerty123");
+    Account& user = c.get_account("Alice");
 
     EXPECT_EQ(user.get_username(), "Alice");
     EXPECT_EQ(user.get_password(), "qwerty123");

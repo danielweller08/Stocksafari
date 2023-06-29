@@ -25,7 +25,7 @@ namespace StockSafari {
             const std::chrono::time_point<std::chrono::system_clock> get_sellDate() { return _sellDate; }
             void set_sellDate(std::chrono::time_point<std::chrono::system_clock> value) { _sellDate = value; }
 
-            Stock get_stock() { return _stock; }
+            Stock& get_stock() { return _stock; }
 
             const double get_quantity() { return _quantity; }
             void set_quantity(double value) { _quantity = value; }

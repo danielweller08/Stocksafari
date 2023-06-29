@@ -25,13 +25,13 @@ namespace StockSafari {
         _stocks.push_back(Stock("INTC", "Intellimouse", 0));
     }
 
-    const vector<Stock> Controller::get_stocks() {
+    vector<Stock>& Controller::get_stocks() {
         return _stocks;
     } 
 
-    Stock Controller::get_stock(string stockId) {
+    Stock& Controller::get_stock(string stockId) {
         // Looks for stocks with matching stockid
-        for(auto s: _stocks) {
+        for(Stock& s: _stocks) {
             if(s.get_stockId() == stockId) {
                 // Returns Stock if it found the right one
                 return s;
@@ -40,91 +40,82 @@ namespace StockSafari {
         throw invalid_argument("Kein passender Stock wurde gefunden.");
     }
 
-        Stock Controller::set_stockValue(string stockId, double value) {
+    Stock& Controller::set_stockValue(string stockId, double value) {
 
-            get_stock(stockId).add_value(StockValue(value));
-            return get_stock(stockId);
+        get_stock(stockId).add_value(StockValue(value));
+        return get_stock(stockId);
+    }
+
+    Account& Controller::buy_stock(string stockId, double quantity, string username) {
+
+        // Check if balance is greater equal than the wanted quantity
+        if(get_account(username).get_balance() >= (quantity * get_stock(stockId).get_value()) ) {
+            //  Created AccountStock with parameters
+            AccountStock account_stock = AccountStock(get_stock(stockId), quantity);  
+
+            // Reduce balance by subtracting the value from it
+            get_account(username).set_balance(get_account(username).get_balance() - (quantity * get_stock(stockId).get_value()));
+
+            return get_account(username);
         }
+        else {
+            throw invalid_argument("Balance reicht nicht aus um gewünschten Stock zu kaufen.");
 
-        Account Controller::get_account(string username) {
-            for(auto acc: _accounts) {
-                if(acc.get_username() == username) {
-                    return acc;
+        }
+        
+    }
+
+    Account& Controller::sell_stock(string stockId, double quantity, string username) {
+
+        // Iterieren durch stocks des accounts  
+        for(auto acc_stock : get_account(username).get_portfolio()) {
+
+            if( stockId == acc_stock.get_stock().get_stockId() ) {
+
+                // Alles verkaufen?
+                if(acc_stock.get_quantity() == quantity) {
+                    
+
+                    // 	1. AccountStock Sold auf true setzen, SellValue, SellDate usw.
+
+                    acc_stock.set_sold(true);
+                    acc_stock.set_sellDate(std::chrono::system_clock::now());
+                    acc_stock.set_sellValue(get_stock(stockId).get_value());
+
+                    // 2. Balance erhöhen
+                    get_account(username).set_balance(get_account(username).get_balance() + (quantity * get_stock(stockId).get_value() ) );
+
+                }
+                // Nur einen Teil verkaufen?
+                else if (acc_stock.get_quantity() > quantity) {
+                                
+                    // 	1. Neuen AccountStock anlegen
+
+                    AccountStock acc = AccountStock(get_stock(stockId), quantity);
+
+                    // 		- Bekommt verkaufte Quantity mit aktueller Value als SellValue
+
+                    acc.set_sellValue(get_stock(stockId).get_value());
+                    acc.set_sold(true);
+                    acc.set_sellDate(std::chrono::system_clock::now());
+
+                    get_account(username).add_stock(acc);
+
+                    // 	2. Alter AccountStock bekommt reduzierte Quantity
+
+                    acc_stock.set_quantity(acc_stock.get_quantity() - quantity);
+
+
+                    // 3. Balance erhöhen
+                    get_account(username).set_balance( get_account(username).get_balance() + quantity * get_stock(stockId).get_value());
+                }
+                else {
+                    throw invalid_argument("Es kann nicht so viel von diesem Stock verkauft werden.");
                 }
             }
-            throw invalid_argument("Account konnte nicht gefunden werden.");
         }
-
-        Account Controller::buy_stock(string stockId, double quantity, string username) {
-
-            // Check if balance is greater equal than the wanted quantity
-            if(get_account(username).get_balance() >= (quantity * get_stock(stockId).get_value()) ) {
-                //  Created AccountStock with parameters
-                AccountStock account_stock = AccountStock(get_stock(stockId), quantity);  
-
-                // Reduce balance by subtracting the value from it
-                get_account(username).set_balance(get_account(username).get_balance() - (quantity * get_stock(stockId).get_value()));
-
-                return get_account(username);
-            }
-            else {
-                throw invalid_argument("Balance reicht nicht aus um gewünschten Stock zu kaufen.");
-
-            }
-            
-        }
-
-        Account Controller::sell_stock(string stockId, double quantity, string username) {
-
-            // Iterieren durch stocks des accounts  
-            for(auto acc_stock : get_account(username).get_portfolio()) {
-
-                if( stockId == acc_stock.get_stock().get_stockId() ) {
-
-                    // Alles verkaufen?
-                    if(acc_stock.get_quantity() == quantity) {
-                        
-
-                        // 	1. AccountStock Sold auf true setzen, SellValue, SellDate usw.
-
-                        acc_stock.set_sold(true);
-                        acc_stock.set_sellDate(std::chrono::system_clock::now());
-                        acc_stock.set_sellValue(get_stock(stockId).get_value());
-
-                        // 2. Balance erhöhen
-                        get_account(username).set_balance(get_account(username).get_balance() + (quantity * get_stock(stockId).get_value() ) );
-
-                    }
-                    // Nur einen Teil verkaufen?
-                    else if (acc_stock.get_quantity() > quantity) {
-                                    
-                        // 	1. Neuen AccountStock anlegen
-
-                        AccountStock acc = AccountStock(get_stock(stockId), quantity);
-
-                        // 		- Bekommt verkaufte Quantity mit aktueller Value als SellValue
-
-                        acc.set_sellValue(get_stock(stockId).get_value());
-                        acc.set_sold(true);
-                        acc.set_sellDate(std::chrono::system_clock::now());
-
-                        get_account(username).add_stock(acc);
-
-                        // 	2. Alter AccountStock bekommt reduzierte Quantity
-
-                        acc_stock.set_quantity(acc_stock.get_quantity() - quantity);
-
-
-                        // 3. Balance erhöhen
-                        get_account(username).set_balance( get_account(username).get_balance() + quantity * get_stock(stockId).get_value());
-                    }
-                    else {
-                        throw invalid_argument("Es kann nicht so viel von diesem Stock verkauft werden.");
-                    }
-                }
-            }
-            throw invalid_argument("Du besitzt diesen stock gar nicht.");
-        }
+        throw invalid_argument("Du besitzt diesen stock gar nicht.");
+    }
 
     Account& Controller::get_account(string username) {
         if(_accounts.size() == 0) {

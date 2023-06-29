@@ -13,15 +13,15 @@ namespace StockSafari {
                 _values({ StockValue(initialValue) })
             { }
 
-            std::string get_stockId();
+            std::string get_stockId() { return _stockId; }
 
-            const std::string get_name();
+            const std::string get_name() { return _name; }
 
-            const double get_value();
+            const double get_value() { return _values.back().get_value(); }
 
-            const std::vector<StockValue> get_values();
+            std::vector<StockValue>& get_values() { return _values; }
 
-            void add_value(StockValue value);
+            void add_value(StockValue value) { _values.push_back(value); };
 
         private:
             /// @brief Id

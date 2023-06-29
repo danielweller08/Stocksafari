@@ -14,11 +14,11 @@ namespace StockSafari {
         public:
             Controller();
 
-            const vector<Stock> get_stocks();
+            vector<Stock>& get_stocks();
 
-            Stock get_stock(string stockId);
+            Stock& get_stock(string stockId);
 
-            Stock set_stockValue(string stockId, double value);
+            Stock& set_stockValue(string stockId, double value);
 
             Account& buy_stock(string stockId, double quantity, string username);
 
