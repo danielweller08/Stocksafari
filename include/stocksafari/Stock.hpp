@@ -13,7 +13,7 @@ namespace StockSafari {
                 _values({ StockValue(initialValue) })
             { }
 
-            const std::string get_stockId();
+            std::string get_stockId();
 
             const std::string get_name();
 

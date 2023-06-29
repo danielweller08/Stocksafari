@@ -11,7 +11,7 @@ namespace StockSafari {
     //     _values({ StockValue(initialValue) })
     // { }
 
-    const std::string Stock::get_stockId() { return _stockId; }
+    std::string Stock::get_stockId() { return _stockId; }
 
     const std::string Stock::get_name() { return _name; }
 

@@ -20,4 +20,7 @@ int main() {
     std::cout << a.get_username();
 
     Controller c;
+
+    c.set_stockValue("APPL", 1);
+
 }
