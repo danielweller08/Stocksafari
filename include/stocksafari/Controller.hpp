@@ -36,6 +36,8 @@ namespace StockSafari {
 
             Account get_account(string username);
 
+            Account create_account(string username, string password);
+
             // Balance erhöhen
             Account deposit(string username, double amount);
 
