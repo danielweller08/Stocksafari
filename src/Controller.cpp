@@ -41,22 +41,26 @@ namespace StockSafari {
     }
 
     Stock& Controller::set_stockValue(string stockId, double value) {
-
         get_stock(stockId).add_value(StockValue(value));
         return get_stock(stockId);
     }
 
-    Account& Controller::buy_stock(string stockId, double quantity, string username) {
+    Account& Controller::buy_stock(string stockId, double quantity, string username, string token) {
+        string decoded_username = try_decode_token(token);
+
+        if (username != decoded_username) {
+            throw invalid_argument("Du kannst nur für dich Stocks kaufen.");
+        }
 
         // Check if balance is greater equal than the wanted quantity
-        if(get_account(username).get_balance() >= (quantity * get_stock(stockId).get_value()) ) {
+        if(get_account(username, token).get_balance() >= (quantity * get_stock(stockId).get_value()) ) {
             //  Created AccountStock with parameters
             AccountStock account_stock = AccountStock(get_stock(stockId), quantity);  
 
             // Reduce balance by subtracting the value from it
-            get_account(username).set_balance(get_account(username).get_balance() - (quantity * get_stock(stockId).get_value()));
+            get_account(username, token).set_balance(get_account(username, token).get_balance() - (quantity * get_stock(stockId).get_value()));
 
-            return get_account(username);
+            return get_account(username, token);
         }
         else {
             throw invalid_argument("Balance reicht nicht aus um gewünschten Stock zu kaufen.");
@@ -65,10 +69,15 @@ namespace StockSafari {
         
     }
 
-    Account& Controller::sell_stock(string stockId, double quantity, string username) {
+    Account& Controller::sell_stock(string stockId, double quantity, string username, string token) {
+        string decoded_username = try_decode_token(token);
+
+        if (username != decoded_username) {
+            throw invalid_argument("Du kannst nur deine eigenen Stocks verkaufen.");
+        }
 
         // Iterieren durch stocks des accounts  
-        for(auto acc_stock : get_account(username).get_portfolio()) {
+        for(auto acc_stock : get_account(username, token).get_portfolio()) {
 
             if( stockId == acc_stock.get_stock().get_stockId() ) {
 
@@ -83,7 +92,7 @@ namespace StockSafari {
                     acc_stock.set_sellValue(get_stock(stockId).get_value());
 
                     // 2. Balance erhöhen
-                    get_account(username).set_balance(get_account(username).get_balance() + (quantity * get_stock(stockId).get_value() ) );
+                    get_account(username, token).set_balance(get_account(username, token).get_balance() + (quantity * get_stock(stockId).get_value() ) );
 
                 }
                 // Nur einen Teil verkaufen?
@@ -99,7 +108,7 @@ namespace StockSafari {
                     acc.set_sold(true);
                     acc.set_sellDate(std::chrono::system_clock::now());
 
-                    get_account(username).add_stock(acc);
+                    get_account(username, token).add_stock(acc);
 
                     // 	2. Alter AccountStock bekommt reduzierte Quantity
 
@@ -107,7 +116,7 @@ namespace StockSafari {
 
 
                     // 3. Balance erhöhen
-                    get_account(username).set_balance( get_account(username).get_balance() + quantity * get_stock(stockId).get_value());
+                    get_account(username, token).set_balance( get_account(username, token).get_balance() + quantity * get_stock(stockId).get_value());
                 }
                 else {
                     throw invalid_argument("Es kann nicht so viel von diesem Stock verkauft werden.");
@@ -117,7 +126,9 @@ namespace StockSafari {
         throw invalid_argument("Du besitzt diesen stock gar nicht.");
     }
 
-    Account& Controller::get_account(string username) {
+    Account& Controller::get_account(string username, string token) {
+        try_decode_token(token);
+
         if(_accounts.size() == 0) {
             throw invalid_argument("Account mit dem Username " + username + " existiert nicht!");
         }
@@ -130,29 +141,60 @@ namespace StockSafari {
         throw invalid_argument("Account mit dem Username " + username + " existiert nicht!");
     }
 
-    Account& Controller::create_account(string username, string password) {
-        for(Account account : _accounts) {
-            if (account.get_username() == username) {
-                throw invalid_argument("Account mit dem Username " + username + " existiert!"); 
-            } 
-        }
-        _accounts.push_back(Account(username, password));
-        return get_account(username);
-    }
+    Account& Controller::deposit(string username, double amount, string token) {
+        string decoded_username = try_decode_token(token);
 
-    Account& Controller::deposit(string username, double amount) {
-        Account& account = get_account(username);
+        if (username != decoded_username) {
+            throw invalid_argument("Du kannst nur bei deinem eigenen Konto Guthaben aufladen.");
+        }
+
+        Account& account = get_account(username, token);
         account.set_balance(account.get_balance() + amount);
         return account;   
     }
 
-    Account& Controller::withdraw(string username, double amount) {
-        Account& account = get_account(username);
+    Account& Controller::withdraw(string username, double amount, string token) {
+        string decoded_username = try_decode_token(token);
+
+        if (username != decoded_username) {
+            throw invalid_argument("Du kannst nur bei deinem eigenen Konto Guthaben auszahlen.");
+        }
+
+        Account& account = get_account(username, token);
         if (account.get_balance() < amount) {
             throw invalid_argument("Du hast nicht genug Guthaben!");
         }
         account.set_balance(account.get_balance() - amount);
         return account;
+    }
+
+    string Controller::registerAccount(string username, string password) {
+        for(Account account : _accounts) {
+            if (account.get_username() == username) {
+                throw invalid_argument("Account mit dem Username " + username + " existiert bereits!"); 
+            } 
+        }
+        _accounts.push_back(Account(username, password));
+        return generate_token(username);
+    }
+
+    string Controller::loginAccount(string username, string password) {
+        bool found = false;
+        bool passwordCorrect = false;
+        for(Account account : _accounts) {
+            if (account.get_username() == username) {
+                found = true;
+                if (account.get_password() == password) {
+                    passwordCorrect = true;
+                }
+            } 
+        }
+
+        if (!found || !passwordCorrect) {
+            throw invalid_argument("Username oder Password falsch!");
+        }
+
+        return generate_token(username);
     }
 
     const string Controller::generate_token(string username) {
@@ -166,7 +208,7 @@ namespace StockSafari {
             .sign(jwt::algorithm::hs256 { get_jwt_secret() });
     }
 
-    const string Controller::decode_token(string token) {
+    const string Controller::try_decode_token(string token) {
         // Build a verifier.
         auto verify = jwt::verify()
             .allow_algorithm(jwt::algorithm::hs256 { get_jwt_secret() })
