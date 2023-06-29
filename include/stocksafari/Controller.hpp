@@ -20,19 +20,19 @@ namespace StockSafari {
 
             Stock& set_stockValue(string stockId, double value);
 
-            Account& buy_stock(string stockId, double quantity, string username);
+            Account& buy_stock(string stockId, double quantity, string username, string token);
 
-            Account& sell_stock(string stockId, double quantity, string username);
+            Account& sell_stock(string stockId, double quantity, string username, string token);
 
-            Account& get_account(string username);
+            Account& get_account(string username, string token);
 
-            Account& create_account(string username, string password);
+            Account& deposit(string username, double amount, string token);
 
-            // Balance erhöhen
-            Account& deposit(string username, double amount);
+            Account& withdraw(string username, double amount, string token);
 
-            // Balance prüfen und dann reduzieren
-            Account& withdraw(string username, double amount);
+            string registerAccount(string username, string password);
+
+            string loginAccount(string username, string password);
 
             /// @brief Generates a jwt token on behalf of the given username.
             /// @return The JWT token.
@@ -41,7 +41,7 @@ namespace StockSafari {
             /// @brief Validates and decodes a jwt token and returns the username.
             /// @param token The JWT token.
             /// @return 
-            const string decode_token(string token);
+            const string try_decode_token(string token);
 
         private:
             /// @brief 64-byte secret string to encode and decode JWT tokens with.
