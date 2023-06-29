@@ -6,31 +6,33 @@ using namespace StockSafari;
 
 TEST(ControllerTest, Buy_Stock) {
     Controller c;
-    Account& person1 = c.create_account("Daniel", "123456");
+    std::string token = c.registerAccount("Daniel", "123456");
+    Account& person1 = c.get_account("Daniel", token);
 
     c.set_stockValue("APPL", 10);
 
-    c.deposit(person1.get_username(), 10);
-    EXPECT_THROW(c.buy_stock("APPL", 2, person1.get_username()) , invalid_argument);
+    c.deposit(person1.get_username(), 10, token);
+    EXPECT_THROW(c.buy_stock("APPL", 2, person1.get_username(), token) , invalid_argument);
 
-    c.deposit(person1.get_username(), 10);
-    Account& acc = c.buy_stock("APPL", 2, person1.get_username());
+    c.deposit(person1.get_username(), 10, token);
+    Account& acc = c.buy_stock("APPL", 2, person1.get_username(), token);
     EXPECT_EQ(acc.get_balance(), 0);
 }
 
 TEST(ControllerTest, Sell_Stock) {
     Controller c;
-    Account& person1 = c.create_account("Daniel", "123456");
+    std::string token = c.registerAccount("Daniel", "123456");
+    Account& person1 = c.get_account("Daniel", token);
 
     c.set_stockValue("APPL", 10);
 
-    c.deposit(person1.get_username(), 10);
+    c.deposit(person1.get_username(), 10, token);
 
-    EXPECT_THROW(c.sell_stock("APPL", 1, person1.get_username()) , invalid_argument);
+    EXPECT_THROW(c.sell_stock("APPL", 1, person1.get_username(), token) , invalid_argument);
 
-    Account& acc = c.buy_stock("APPL", 1, person1.get_username());
+    Account& acc = c.buy_stock("APPL", 1, person1.get_username(), token);
     EXPECT_EQ(acc.get_balance(), 0);
-    acc = c.sell_stock("APPL", 1, person1.get_username());
+    acc = c.sell_stock("APPL", 1, person1.get_username(), token);
     EXPECT_EQ(acc.get_balance(), 10);
 }
 
