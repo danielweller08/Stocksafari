@@ -5,6 +5,7 @@
 #include <stocksafari/Controller.hpp>
 #include <iostream>
 
+
 using namespace StockSafari;
 
 int main() {
@@ -15,6 +16,12 @@ int main() {
     AccountStock as = AccountStock(stock, 10);
 
     // Account a = Account("Daniel", "Damyan");
+
+    std::cout << a.get_username();
+
+    Controller c;
+
+    c.set_stockValue("APPL", 1);
 
     Controller c;  
 
