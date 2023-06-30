@@ -30,10 +30,18 @@ TEST(ControllerTest, Sell_Stock) {
 
     EXPECT_THROW(c.sell_stock("APPL", 1, person1.get_username(), token) , invalid_argument);
 
+    // Kauft 1 stock
     c.buy_stock("APPL", 1, person1.get_username(), token);
     EXPECT_EQ(c.get_account("Daniel", token).get_balance(), 0);
+    // Verkauft wieder 1 Stock und erhöht budget wieder auf 10
     person1 = c.sell_stock("APPL", 1, person1.get_username(), token);
-    // EXPECT_EQ(person1.get_balance(), 10);
+    EXPECT_EQ(person1.get_balance(), 10);
+
+    // Kauft 1 stock
+    c.buy_stock("APPL", 1, person1.get_username(), token);
+    // Verkauft 0.5 Stocks und erhöht budget auf 5
+    person1 = c.sell_stock("APPL", 0.5, person1.get_username(), token);
+    EXPECT_EQ(person1.get_balance(), 5);
 }
 
 TEST(ControllerTest, CreateAccountTest) {
