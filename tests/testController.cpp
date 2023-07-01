@@ -1,16 +1,47 @@
 #include <gtest/gtest.h>
 #include <stocksafari/Controller.hpp>
+#include <iostream>
 
 using namespace StockSafari;
 
-// Test that quantity is too high
 TEST(ControllerTest, Buy_Stock) {
-    // Account person1 = Account("Daniel", "1234566");
+    Controller c;
+    std::string token = c.registerAccount("Daniel", "123456");
+    Account& person1 = c.get_account("Daniel", token);
 
-    // Controller c;
-    // c.createaccount();
-    // c.deposit(100);
-    // c.set_stockValue("APPL", 10);
+    c.set_stockValue("APPL", 10);
+
+    c.deposit(person1.get_username(), 10, token);
+    EXPECT_THROW(c.buy_stock("APPL", 2, person1.get_username(), token) , invalid_argument);
+
+    c.deposit(person1.get_username(), 10, token);
+    Account& acc = c.buy_stock("APPL", 2, person1.get_username(), token);
+    EXPECT_EQ(acc.get_balance(), 0);
+}
+
+TEST(ControllerTest, Sell_Stock) {
+    Controller c;
+    std::string token = c.registerAccount("Daniel", "123456");
+    Account& person1 = c.get_account("Daniel", token);
+
+    c.set_stockValue("APPL", 10);
+
+    c.deposit(person1.get_username(), 10, token);
+
+    EXPECT_THROW(c.sell_stock("APPL", 1, person1.get_username(), token) , invalid_argument);
+
+    // Kauft 1 stock
+    c.buy_stock("APPL", 1, person1.get_username(), token);
+    EXPECT_EQ(c.get_account("Daniel", token).get_balance(), 0);
+    // Verkauft wieder 1 Stock und erhöht budget wieder auf 10
+    person1 = c.sell_stock("APPL", 1, person1.get_username(), token);
+    EXPECT_EQ(person1.get_balance(), 10);
+
+    // Kauft 1 stock
+    c.buy_stock("APPL", 1, person1.get_username(), token);
+    // Verkauft 0.5 Stocks und erhöht budget auf 5
+    person1 = c.sell_stock("APPL", 0.5, person1.get_username(), token);
+    EXPECT_EQ(person1.get_balance(), 5);
 }
 
 TEST(ControllerTest, CreateAccountTest) {
