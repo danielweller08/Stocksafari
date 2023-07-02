@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include <stocksafari/Account.hpp>
 #include <stocksafari/Stock.hpp>
-#include <stocksafari/StockValue.hpp>
 
 #pragma once
 

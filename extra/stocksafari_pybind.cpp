@@ -30,11 +30,6 @@ PYBIND11_MODULE(stocksafari, m) {
         .def("get_values", &Stock::get_values)
         .def("add_value", &Stock::add_value);
 
-    py::class_<StockValue>(m, "StockValue")
-        .def(py::init<double>())
-        .def("get_date", &StockValue::get_date)
-        .def("get_value", &StockValue::get_value);
-
     py::class_<Controller>(m, "Controller")
         .def(py::init<>())
         .def("buy_stock", &Controller::buy_stock)

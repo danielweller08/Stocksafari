@@ -1,4 +1,3 @@
-#include <stocksafari/StockValue.hpp>
 #include <stocksafari/Stock.hpp>
 #include <stocksafari/AccountStock.hpp>
 #include <stocksafari/Account.hpp>
@@ -9,8 +8,6 @@
 using namespace StockSafari;
 
 int main() {
-    StockValue value = StockValue(10);
-
     Controller c;
 
     c.set_stockValue("APPL", 1);

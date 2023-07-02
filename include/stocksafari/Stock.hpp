@@ -1,6 +1,5 @@
 #include <string>
 #include <vector>
-#include <stocksafari/StockValue.hpp>
 
 #pragma once
 
@@ -10,7 +9,7 @@ namespace StockSafari {
             Stock(std::string stockId, std::string name, double initialValue, double increase) :
                 _stockId(stockId),
                 _name(name),
-                _values({ StockValue(initialValue) }),
+                _values({ initialValue }),
                 _increase(increase)
             { }
 
@@ -18,11 +17,11 @@ namespace StockSafari {
 
             const std::string get_name() { return _name; }
 
-            const double get_value() { return _values.back().get_value(); }
+            const double get_value() { return _values.back(); }
 
-            std::vector<StockValue>& get_values() { return _values; }
+            std::vector<double>& get_values() { return _values; }
 
-            void add_value(StockValue value) { _values.push_back(value); };
+            void add_value(double value) { _values.push_back(value); };
 
         private:
             /// @brief Id
@@ -35,7 +34,7 @@ namespace StockSafari {
             double _increase;
 
             /// @brief Stock value history.
-            std::vector<StockValue> _values;
+            std::vector<double> _values;
 
     };
 }

@@ -41,7 +41,7 @@ namespace StockSafari {
     }
 
     Stock& Controller::set_stockValue(string stockId, double value) {
-        get_stock(stockId).add_value(StockValue(value));
+        get_stock(stockId).add_value(value);
         return get_stock(stockId);
     }
 
