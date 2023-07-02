@@ -23,7 +23,7 @@ namespace StockSafari {
 
             Account& sell_stock(string stockId, double quantity, string token);
 
-            Account& get_account(string username, string token);
+            Account& get_account(string token);
 
             Account& deposit(string username, double amount, string token);
 
