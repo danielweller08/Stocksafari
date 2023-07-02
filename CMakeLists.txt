@@ -1,4 +1,4 @@
-## Konfiguration des Buildsystems CMake ##
+# Konfiguration des Buildsystems CMake ##
 
 # Minimale Version des Buildsystems
 cmake_minimum_required(VERSION 3.14)
@@ -21,31 +21,31 @@ include_directories(include)
 include_directories(external)
 
 
-# find_package(pybind11 REQUIRED)
+find_package(pybind11 REQUIRED)
 
 # Sammle die Quelldateien
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
-# Baue die demo-Programme
+# demo
 add_executable(demo
   examples/demo.cpp
   ${SRC_FILES}
 )
 
+# pybind
+pybind11_add_module(stocksafari
+  extra/stocksafari_pybind.cpp
+  ${SRC_FILES}
+)
+
 # Füge die OpenSSL-Bibliotheken hinzu
 target_link_libraries(demo PRIVATE ssl crypto)
-
-
-# # Demo pybind
-# pybind11_add_module(stadt_land_fluss
-#   examples/demo_pybind.cpp
-#   ${SRC_FILES}
-# )
+target_link_libraries(stocksafari PRIVATE ssl crypto)
 
 # # Installiere die Bibliothek
-# install(TARGETS stadt_land_fluss
-#   COMPONENT python
-#   LIBRARY DESTINATION "${PROJECT_SOURCE_DIR}/extra")
+install(TARGETS stocksafari
+  COMPONENT python
+  LIBRARY DESTINATION "${PROJECT_SOURCE_DIR}/extra")
 
 # Use CMakes FetchContent
 include(FetchContent)
