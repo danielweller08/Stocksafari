@@ -16,11 +16,13 @@ namespace StockSafari {
             { }
 
             const double get_buyValue() { return _buyValue; }
+            void set_buyValue(double value) { _buyValue = value; }
 
             const double get_sellValue() { return _sellValue; }
             void set_sellValue(double value) { _sellValue = value; }
 
             const std::chrono::time_point<std::chrono::system_clock> get_buyDate() { return _buyDate; }
+            void set_buyDate(std::chrono::time_point<std::chrono::system_clock> value) { _buyDate = value; }
 
             const std::chrono::time_point<std::chrono::system_clock> get_sellDate() { return _sellDate; }
             void set_sellDate(std::chrono::time_point<std::chrono::system_clock> value) { _sellDate = value; }

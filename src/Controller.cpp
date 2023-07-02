@@ -45,7 +45,7 @@ namespace StockSafari {
         return get_stock(stockId);
     }
 
-    Account& Controller::buy_stock(string stockId, double quantity, string username, string token) {
+    Account& Controller::buy_stock(string username, string stockId, double quantity, string token) {
         string decoded_username = try_decode_token(token);
 
         if (username != decoded_username) {
@@ -72,7 +72,7 @@ namespace StockSafari {
         
     }
 
-    Account& Controller::sell_stock(string stockId, double quantity, string username, string token) {
+    Account& Controller::sell_stock(string username, string stockId, double quantity, string token) {
         string decoded_username = try_decode_token(token);
 
         if (username != decoded_username) {
@@ -112,6 +112,8 @@ namespace StockSafari {
                         acc.set_sellValue(get_stock(stockId).get_value());
                         acc.set_sold(true);
                         acc.set_sellDate(std::chrono::system_clock::now());
+                        acc.set_buyDate(acc_stock.get_buyDate());
+                        acc.set_buyValue(acc_stock.get_buyValue());
 
                         // 	2. Alter AccountStock bekommt reduzierte Quantity
 
@@ -139,10 +141,10 @@ namespace StockSafari {
     }
 
     Account& Controller::get_account(string username, string token) {
-        try_decode_token(token);
+        string usernameToken = try_decode_token(token);
 
-        if(_accounts.size() == 0) {
-            throw invalid_argument("Account mit dem Username " + username + " existiert nicht!");
+        if (username != usernameToken) {
+            throw invalid_argument("Du darfst nur deinen eigenen Account einsehen.");
         }
 
         for (int i = 0; i < _accounts.size(); i++) {
@@ -150,7 +152,7 @@ namespace StockSafari {
                 return _accounts[i];
             }
         }
-        throw invalid_argument("Account mit dem Username " + username + " existiert nicht!");
+        throw invalid_argument("Dein Account konnte nicht gefunden werden.");
     }
 
     Account& Controller::deposit(string username, double amount, string token) {

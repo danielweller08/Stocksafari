@@ -4,96 +4,162 @@
 
 using namespace StockSafari;
 
-TEST(ControllerTest, Buy_Stock) {
+TEST(ControllerTest, Register_Works) {
     Controller c;
-    std::string token = c.registerAccount("Daniel", "123456");
-    Account& person1 = c.get_account("Daniel", token);
+    std::string token = c.registerAccount("User", "password");
+
+    Account user = c.get_account("User", token);
+
+    ASSERT_EQ("User", user.get_username());
+}
+
+TEST(ControllerTest, Register_ExistingUser_Throws) {
+    Controller c;
+    c.registerAccount("User", "password");
+
+    ASSERT_ANY_THROW(c.registerAccount("User", "differentPassword"));
+}
+
+TEST(ControllerTest, Login_Works) {
+    Controller c;
+    std::string token = c.registerAccount("User", "password");
+
+    ASSERT_NO_THROW(c.loginAccount("User", "password"));
+}
+
+TEST(ControllerTest, GetAccount_Works) {
+    Controller c;
+    std::string token = c.registerAccount("User", "password");
+
+    ASSERT_NO_THROW(c.get_account("User", token));
+}
+
+TEST(ControllerTest, GetAccount_DifferentUser_THROWS) {
+    Controller c;
+    std::string token1 = c.registerAccount("User1", "password");
+    std::string token2 = c.registerAccount("User2", "password");
+
+    ASSERT_ANY_THROW(c.get_account("User1", token2));
+}
+
+TEST(ControllerTest, Deposit_Works) {
+    Controller c;
+    std::string token = c.registerAccount("User", "password");
+
+    EXPECT_NO_THROW(c.deposit("User", 100, token));
+
+    ASSERT_EQ(100, c.get_account("User", token).get_balance());
+}
+
+TEST(ControllerTest, Withdraw_Works) {
+    Controller c;
+    std::string token = c.registerAccount("User", "password");
+
+    c.deposit("User", 100, token);
+    EXPECT_NO_THROW(c.withdraw("User", 50, token));
+
+    ASSERT_EQ(50, c.get_account("User", token).get_balance());
+}
+
+TEST(ControllerTest, Withdraw_LowBalance_Throws) {
+    Controller c;
+    std::string token = c.registerAccount("User", "password");
+
+    c.deposit("User", 50, token);
+    ASSERT_ANY_THROW(c.withdraw("User", 100, token));
+}
+
+TEST(ControllerTest, BuyStock_Works) {
+    Controller c;
+    std::string token = c.registerAccount("User", "password");
 
     c.set_stockValue("APPL", 10);
 
-    c.deposit(person1.get_username(), 10, token);
-    EXPECT_THROW(c.buy_stock("APPL", 2, person1.get_username(), token) , invalid_argument);
+    c.deposit("User", 100, token);
+    EXPECT_NO_THROW(c.buy_stock("User", "APPL", 10, token));
 
-    c.deposit(person1.get_username(), 10, token);
-    Account& acc = c.buy_stock("APPL", 2, person1.get_username(), token);
-    EXPECT_EQ(acc.get_balance(), 0);
+    auto portfolio = c.get_account("User", token).get_portfolio();
+
+    ASSERT_EQ(1, portfolio.size());
+
+    EXPECT_NE(std::chrono::time_point<std::chrono::system_clock>{}, portfolio[0].get_buyDate());
+    EXPECT_EQ(10, portfolio[0].get_buyValue());
+    EXPECT_EQ(10, portfolio[0].get_quantity());
+    EXPECT_EQ(false, portfolio[0].get_sold());
+    EXPECT_EQ("APPL", portfolio[0].get_stock().get_stockId());
 }
 
-TEST(ControllerTest, Sell_Stock) {
+TEST(ControllerTest, BuyStock_DecreasesBalance) {
     Controller c;
-    std::string token = c.registerAccount("Daniel", "123456");
-    Account& person1 = c.get_account("Daniel", token);
+    std::string token = c.registerAccount("User", "password");
 
     c.set_stockValue("APPL", 10);
 
-    c.deposit(person1.get_username(), 10, token);
+    c.deposit("User", 100, token);
+    EXPECT_NO_THROW(c.buy_stock("User", "APPL", 10, token));
 
-    EXPECT_THROW(c.sell_stock("APPL", 1, person1.get_username(), token) , invalid_argument);
-
-    // Kauft 1 stock
-    c.buy_stock("APPL", 1, person1.get_username(), token);
-    EXPECT_EQ(c.get_account("Daniel", token).get_balance(), 0);
-    // Verkauft wieder 1 Stock und erhöht budget wieder auf 10
-    person1 = c.sell_stock("APPL", 1, person1.get_username(), token);
-    EXPECT_EQ(person1.get_balance(), 10);
-
-    // Kauft 1 stock
-    c.buy_stock("APPL", 1, person1.get_username(), token);
-    // Verkauft 0.5 Stocks und erhöht budget auf 5
-    person1 = c.sell_stock("APPL", 0.5, person1.get_username(), token);
-    EXPECT_EQ(person1.get_balance(), 5);
+    ASSERT_EQ(0, c.get_account("User", token).get_balance());
 }
 
-TEST(ControllerTest, CreateAccountTest) {
+TEST(ControllerTest, BuyStock_LowBalance_Throws) {
     Controller c;
-    string token = c.registerAccount("Alice", "qwerty123");
-    Account& account = c.get_account("Alice", token);
-    EXPECT_EQ(account.get_username(), "Alice");
-    EXPECT_EQ(account.get_password(), "qwerty123");
-    EXPECT_THROW(c.registerAccount("Alice", token), invalid_argument);
+    std::string token = c.registerAccount("User", "password");
+
+    c.set_stockValue("APPL", 10);
+
+    ASSERT_ANY_THROW(c.buy_stock("User", "APPL", 10, token));
 }
 
-TEST(ControllerTest, GetAccountTest) {
+TEST(ControllerTest, SellStock_Works) {
     Controller c;
-    string token = c.registerAccount("Alice", "qwerty123");
-    Account& user = c.get_account("Alice", token);
+    std::string token = c.registerAccount("User", "password");
 
-    EXPECT_EQ(user.get_username(), "Alice");
-    EXPECT_EQ(user.get_password(), "qwerty123");
-    EXPECT_THROW(c.get_account("Bob", token), invalid_argument);
+    c.set_stockValue("APPL", 10);
+
+    c.deposit("User", 100, token);
+
+    c.buy_stock("User", "APPL", 10, token);
+
+    ASSERT_NO_THROW(c.sell_stock("User", "APPL", 10, token));
+
+    AccountStock accountStock = c.get_account("User", token).get_portfolio()[0];
+
+    EXPECT_NE(std::chrono::time_point<std::chrono::system_clock>{}, accountStock.get_sellDate());
+    EXPECT_EQ(10, accountStock.get_sellValue());
+    EXPECT_EQ(true, accountStock.get_sold());
 }
 
-TEST(ControllerTest, DepositTest) {
+TEST(ControllerTest, SellStock_Partially_Works) {
     Controller c;
-    string token = c.registerAccount("Alice", "qwerty123");
-    Account& account = c.get_account("Alice", token);
+    std::string token = c.registerAccount("User", "password");
 
-    c.deposit("Alice", 100, token);
-    EXPECT_EQ(100, account.get_balance());
-    c.deposit("Alice", 42, token);
-    EXPECT_EQ(142, account.get_balance());
+    c.set_stockValue("APPL", 10);
 
-    EXPECT_THROW(c.deposit("Bob", 999, token), invalid_argument);
-}
+    c.deposit("User", 100, token);
 
-TEST(ControllerTest, WithdrawTest) {
-    Controller c;
-    string token = c.registerAccount("Alice", "qwerty123");
-    Account& account = c.get_account("Alice", token);
-     
-    EXPECT_THROW(c.withdraw("Alice", 100, token), invalid_argument);
-    EXPECT_THROW(c.withdraw("Bob", 100, token), invalid_argument);
-    
-    c.deposit("Alice", 300, token);
-    c.withdraw("Alice", 100, token);
-    EXPECT_EQ(200, account.get_balance());
-    c.withdraw("Alice", 200, token);
-    EXPECT_EQ(0, account.get_balance());
+    c.buy_stock("User", "APPL", 10, token);
+
+    c.set_stockValue("APPL", 5);
+
+    ASSERT_NO_THROW(c.sell_stock("User", "APPL", 5, token));
+
+    auto portfolio = c.get_account("User", token).get_portfolio();
+
+    ASSERT_EQ(2, portfolio.size());
+
+    EXPECT_EQ(5, portfolio[0].get_quantity());
+    EXPECT_EQ(5, portfolio[1].get_quantity());
+    EXPECT_EQ(10, portfolio[1].get_buyValue());
+    EXPECT_EQ(5, portfolio[1].get_sellValue());
+    EXPECT_EQ("APPL", portfolio[1].get_stock().get_stockId());
+    EXPECT_EQ(portfolio[0].get_buyDate(), portfolio[1].get_buyDate());
+    EXPECT_NE(std::chrono::time_point<std::chrono::system_clock>{}, portfolio[1].get_sellDate());
+    EXPECT_EQ(true, portfolio[1].get_sold());
 }
 
 TEST(ControllerTest, Authentication_Works) {
     Controller c;
-    auto token = c.generate_token("TEST");
+    auto token = c.generate_token("User");
     auto result = c.try_decode_token(token);
-    ASSERT_EQ("TEST", result);
+    ASSERT_EQ("User", result);
 }
