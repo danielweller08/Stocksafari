@@ -7,10 +7,11 @@
 namespace StockSafari {
     class Stock {
         public:
-            Stock(std::string stockId, std::string name, double initialValue) :
+            Stock(std::string stockId, std::string name, double initialValue, double increase) :
                 _stockId(stockId),
                 _name(name),
-                _values({ StockValue(initialValue) })
+                _values({ StockValue(initialValue) }),
+                _increase(increase)
             { }
 
             std::string get_stockId() { return _stockId; }
@@ -29,6 +30,9 @@ namespace StockSafari {
 
             /// @brief Name
             std::string _name;
+
+            /// @brief The market value increase in percent.
+            double _increase;
 
             /// @brief Stock value history.
             std::vector<StockValue> _values;

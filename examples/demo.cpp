@@ -11,10 +11,6 @@ using namespace StockSafari;
 int main() {
     StockValue value = StockValue(10);
 
-    Stock stock = Stock("APPL", "Snapple", 20);
-
-    AccountStock as = AccountStock(stock, 10);
-
     Controller c;
 
     c.set_stockValue("APPL", 1);

@@ -7,22 +7,22 @@ using namespace std;
 namespace StockSafari {
 
     Controller::Controller() { 
-        _stocks.push_back(Stock("APPL", "Snapple", 0));
-        _stocks.push_back(Stock("MSFT", "Microhard", 0));
-        _stocks.push_back(Stock("AMZN", "Amazoo", 0));
-        _stocks.push_back(Stock("GOOG", "Alphabutt", 0));
-        _stocks.push_back(Stock("META", "Facebark", 0));
-        _stocks.push_back(Stock("BRK.A", "Berkshire Hataway", 0));
-        _stocks.push_back(Stock("JPM", "JPMoney Chase", 0));
-        _stocks.push_back(Stock("PG", "Procter & Gamble With It", 0));
-        _stocks.push_back(Stock("V", "Vroom vroom", 0));
-        _stocks.push_back(Stock("WMT", "Wallyworld", 0));
-        _stocks.push_back(Stock("MA", "Masterlord", 0));
-        _stocks.push_back(Stock("XOM", "Exxtra money Mobil", 0));
-        _stocks.push_back(Stock("NESM", "Noodle", 0));
-        _stocks.push_back(Stock("T", "A-Team & T", 0));
-        _stocks.push_back(Stock("PFE", "Pfeiffer", 0));
-        _stocks.push_back(Stock("INTC", "Intellimouse", 0));
+        _stocks.push_back(Stock("APPL", "Snapple", 193.97, 2.31));
+        _stocks.push_back(Stock("MSFT", "Microhard", 340.54, 1.64));
+        _stocks.push_back(Stock("AMZN", "Amazoo", 130.36, 1.92));
+        _stocks.push_back(Stock("GOOG", "Alphabutt", 120.97, 0.8));
+        _stocks.push_back(Stock("META", "Facebark", 286.98, 1.94));
+        _stocks.push_back(Stock("BRK.A", "Berkshire Hataway", 517810.00, 1.08));
+        _stocks.push_back(Stock("JPM", "JPMoney Chase", 145.44, 1.4));
+        _stocks.push_back(Stock("PG", "Procter & Gamble With It", 151.74, 1.58));
+        _stocks.push_back(Stock("V", "Vroom vroom", 237.48, 1.35));
+        _stocks.push_back(Stock("WMT", "Wallyworld", 157.18, 1.88));
+        _stocks.push_back(Stock("MA", "Masterlord", 393.30, 1.45));
+        _stocks.push_back(Stock("XOM", "Exxtra money Mobil", 107.25, 0.52));
+        _stocks.push_back(Stock("NESM", "Noodle", 109.50, -0.45));
+        _stocks.push_back(Stock("T", "A-Team & T", 15.95, -0.19));
+        _stocks.push_back(Stock("PFE", "Pfeiffer", 36.68, 1.55));
+        _stocks.push_back(Stock("INTC", "Intellimouse", 33.44, 1.61));
     }
 
     vector<Stock>& Controller::get_stocks() {
