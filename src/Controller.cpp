@@ -45,12 +45,8 @@ namespace StockSafari {
         return get_stock(stockId);
     }
 
-    Account& Controller::buy_stock(string username, string stockId, double quantity, string token) {
-        string decoded_username = try_decode_token(token);
-
-        if (username != decoded_username) {
-            throw invalid_argument("Du kannst nur für dich Stocks kaufen.");
-        }
+    Account& Controller::buy_stock(string stockId, double quantity, string token) {
+        string username = try_decode_token(token);
 
         // Check if balance is greater equal than the wanted quantity
         if(get_account(username, token).get_balance() >= (quantity * get_stock(stockId).get_value()) ) {
@@ -72,12 +68,8 @@ namespace StockSafari {
         
     }
 
-    Account& Controller::sell_stock(string username, string stockId, double quantity, string token) {
-        string decoded_username = try_decode_token(token);
-
-        if (username != decoded_username) {
-            throw invalid_argument("Du kannst nur deine eigenen Stocks verkaufen.");
-        }
+    Account& Controller::sell_stock(string stockId, double quantity, string token) {
+        string username = try_decode_token(token);
 
         // Iterieren durch stocks des accounts  
         for(auto& acc_stock : get_account(username, token).get_portfolio()) {

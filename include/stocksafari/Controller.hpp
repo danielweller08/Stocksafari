@@ -20,9 +20,9 @@ namespace StockSafari {
 
             Stock& set_stockValue(string stockId, double value);
 
-            Account& buy_stock(string username, string stockId, double quantity, string token);
+            Account& buy_stock(string stockId, double quantity, string token);
 
-            Account& sell_stock(string username, string stockId, double quantity, string token);
+            Account& sell_stock(string stockId, double quantity, string token);
 
             Account& get_account(string username, string token);
 

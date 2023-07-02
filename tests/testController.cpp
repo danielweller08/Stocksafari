@@ -76,7 +76,7 @@ TEST(ControllerTest, BuyStock_Works) {
     c.set_stockValue("APPL", 10);
 
     c.deposit("User", 100, token);
-    EXPECT_NO_THROW(c.buy_stock("User", "APPL", 10, token));
+    EXPECT_NO_THROW(c.buy_stock("APPL", 10, token));
 
     auto portfolio = c.get_account("User", token).get_portfolio();
 
@@ -96,7 +96,7 @@ TEST(ControllerTest, BuyStock_DecreasesBalance) {
     c.set_stockValue("APPL", 10);
 
     c.deposit("User", 100, token);
-    EXPECT_NO_THROW(c.buy_stock("User", "APPL", 10, token));
+    EXPECT_NO_THROW(c.buy_stock("APPL", 10, token));
 
     ASSERT_EQ(0, c.get_account("User", token).get_balance());
 }
@@ -107,7 +107,7 @@ TEST(ControllerTest, BuyStock_LowBalance_Throws) {
 
     c.set_stockValue("APPL", 10);
 
-    ASSERT_ANY_THROW(c.buy_stock("User", "APPL", 10, token));
+    ASSERT_ANY_THROW(c.buy_stock("APPL", 10, token));
 }
 
 TEST(ControllerTest, SellStock_Works) {
@@ -118,9 +118,9 @@ TEST(ControllerTest, SellStock_Works) {
 
     c.deposit("User", 100, token);
 
-    c.buy_stock("User", "APPL", 10, token);
+    c.buy_stock("APPL", 10, token);
 
-    ASSERT_NO_THROW(c.sell_stock("User", "APPL", 10, token));
+    ASSERT_NO_THROW(c.sell_stock("APPL", 10, token));
 
     AccountStock accountStock = c.get_account("User", token).get_portfolio()[0];
 
@@ -137,11 +137,11 @@ TEST(ControllerTest, SellStock_Partially_Works) {
 
     c.deposit("User", 100, token);
 
-    c.buy_stock("User", "APPL", 10, token);
+    c.buy_stock("APPL", 10, token);
 
     c.set_stockValue("APPL", 5);
 
-    ASSERT_NO_THROW(c.sell_stock("User", "APPL", 5, token));
+    ASSERT_NO_THROW(c.sell_stock("APPL", 5, token));
 
     auto portfolio = c.get_account("User", token).get_portfolio();
 
