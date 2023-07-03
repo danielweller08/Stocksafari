@@ -7,6 +7,7 @@ using namespace std;
 namespace StockSafari {
 
     Controller::Controller() { 
+        // Add a few initial stocks.
         _stocks.push_back(Stock("APPL", "Snapple", 193.97, 2.31));
         _stocks.push_back(Stock("MSFT", "Microhard", 340.54, 1.64));
         _stocks.push_back(Stock("AMZN", "Amazoo", 130.36, 1.92));
@@ -25,9 +26,7 @@ namespace StockSafari {
         _stocks.push_back(Stock("INTC", "Intellimouse", 33.44, 1.61));
     }
 
-    vector<Stock>& Controller::get_stocks() {
-        return _stocks;
-    } 
+    vector<Stock>& Controller::get_stocks() { return _stocks; } 
 
     Stock& Controller::get_stock(string stockId) {
         // Looks for stocks with matching stockid

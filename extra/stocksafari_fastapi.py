@@ -24,7 +24,7 @@ def get_auth_token(request: Request):
     auth_header = request.headers.get('authorization')
     return auth_header.removeprefix('Bearer ')
 
-# Request and Response Models
+# Response Models
 class Stock:
     def __init__(self, pybindStock):
        self.stockId = pybindStock.get_stockId()
@@ -63,14 +63,16 @@ class Account:
         for portfolioEntry in pybindAccount.get_portfolio():
             self.portfolio.append(PortfolioEntry(portfolioEntry))
 
+# Request models
 class AuthRequest(BaseModel):
     username: str
     password: str
 
+# Init FastAPI and Controller class.
 c = Controller()
-
 api = FastAPI()
 
+# Define endpoint for reading all stocks.
 @api.get("/stocks")
 async def get_stocks():
     try:
@@ -84,7 +86,8 @@ async def get_stocks():
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
+# Define endpoint for reading stock details by id.
 @api.get("/stocks/{stockId}")
 async def get_stock(stockId: str):
     try:
@@ -92,6 +95,7 @@ async def get_stock(stockId: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for buying a stock, auth is required.
 @api.post("/stocks/{stockId}/buy")
 async def buy_stock(stockId: str, quantity: float, request: Request):
     try:
@@ -99,6 +103,7 @@ async def buy_stock(stockId: str, quantity: float, request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for selling a stock, auth is required.
 @api.post("/stocks/{stockId}/sell")
 async def sell_stock(stockId: str, quantity: float, request: Request):
     try:
@@ -106,6 +111,7 @@ async def sell_stock(stockId: str, quantity: float, request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for reading account information including the portfolio, auth is required.
 @api.get("/accounts/me")
 async def get_account(request: Request):
     try:
@@ -113,6 +119,7 @@ async def get_account(request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for logging in, returns a bearer token.
 @api.post("/accounts/login")
 async def login(request: AuthRequest):
     try:
@@ -122,6 +129,7 @@ async def login(request: AuthRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for signing in, returns a bearer token.
 @api.post("/accounts/new")
 async def new(request: AuthRequest):
     try:
@@ -131,6 +139,7 @@ async def new(request: AuthRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for depositing money, auth is required.
 @api.post("/accounts/me/deposit")
 async def deposit(amount: float, request: Request):
     try:
@@ -138,6 +147,7 @@ async def deposit(amount: float, request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for withdrawing money, auth is required.
 @api.post("/accounts/me/withdraw")
 async def withdraw(amount: float, request: Request):
     try:
