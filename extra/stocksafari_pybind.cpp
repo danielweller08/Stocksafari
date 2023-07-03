@@ -18,6 +18,7 @@ PYBIND11_MODULE(stocksafari, m) {
     py::class_<PortfolioEntry>(m, "PortfolioEntry")
         .def("get_details", &PortfolioEntry::get_details)
         .def("get_percental_increase", &PortfolioEntry::get_percental_increase)
+        .def("get_sold", &PortfolioEntry::get_sold)
         .def("get_stock", &PortfolioEntry::get_stock)
         .def("get_total_increase", &PortfolioEntry::get_total_increase);
 
@@ -30,6 +31,7 @@ PYBIND11_MODULE(stocksafari, m) {
         .def("get_sold", &PortfolioEntryDetail::get_sold);
 
     py::class_<Stock>(m, "Stock")
+        .def("get_increase", &Stock::get_increase)
         .def("get_name", &Stock::get_name)
         .def("get_stockId", &Stock::get_stockId)
         .def("get_value", &Stock::get_value)

@@ -39,4 +39,15 @@ namespace StockSafari {
         // Divide increase with total costs and multiply by 100 to get percentage value.
         return (get_total_increase() / total_costs) * 100;
     }
+
+    bool PortfolioEntry::get_sold() const {
+        for (PortfolioEntryDetail detail: _details) {
+            if (detail.get_sold() == false) {
+                // Active stocks found. Return false.
+                return false;
+            }
+        }
+        // No active stocks found. Return true;
+        return true;
+    }
 }

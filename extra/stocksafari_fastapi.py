@@ -18,13 +18,63 @@ import os
 from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
 import uvicorn
+import numpy as np
+import threading
+import time
 
 # Method to extract and format the Authorization header.
 def get_auth_token(request: Request):
     auth_header = request.headers.get('authorization')
     return auth_header.removeprefix('Bearer ')
 
-# Request and Response Models
+def update_stocks(args, kwargs):
+    global c
+
+    # Generate 999 stock values each initially
+    for stock in c.get_stocks():
+        start = stock.get_value()
+        drift = stock.get_increase() * 0.2 # 10*(2* np.random.rand () - 1.0)
+        kurs = kursverlauf(drift, 0.8, 0.001, start, 999)
+
+        for i in kurs:
+            c.set_stockValue(stock.get_stockId(), np.round(i, 2))
+
+    print("[999] New set of values added")
+
+    stockCourses = []
+    while True:
+        # Update the stockCourses with 1000 new values per stock.
+        for stock in c.get_stocks():
+            start = stock.get_value()
+            drift = stock.get_increase() * 0.2
+            kurs = kursverlauf(drift, 0.8, 0.001, start, 1000)
+            stockCourses.append(kurs)
+
+        for i in range(1000):
+            for j in range(len(c.get_stocks())):
+                c.set_stockValue(c.get_stocks()[j].get_stockId(), np.round(stockCourses[j][i], 2))
+
+            print("["+ str(i) +"] New set of values added")
+
+            time.sleep(2) # Sleep a sec before updating the next values.
+
+# Method to start a background thread.
+def start_thread(function_name, *args, **kwargs):
+    t = threading.Thread(target=function_name, args=args, kwargs=kwargs)
+    t.daemon = True
+    t.start()
+    return t
+
+def kursverlauf (tendenz , streuung , dt , start , anzahl):
+    sqdt = np.sqrt(dt)
+    kurs = np.zeros(anzahl)
+    kurs [0] = start
+    for i in range(anzahl -1):
+        Y = 2*np.random.rand () - 1.0
+        kurs[i+1] = np.round(kurs[i] * (1 + tendenz *dt + streuung *sqdt*Y), 2)
+    return kurs
+
+# Response Models
 class Stock:
     def __init__(self, pybindStock):
        self.stockId = pybindStock.get_stockId()
@@ -50,6 +100,7 @@ class PortfolioEntry:
     def __init__(self, pybindPortfolioEntry):
         self.total_increase = pybindPortfolioEntry.get_total_increase()
         self.percental_increase = pybindPortfolioEntry.get_percental_increase()
+        self.sold = pybindPortfolioEntry.get_sold()
         self.stock = Stock(pybindPortfolioEntry.get_stock())
         self.details = []
         for detail in pybindPortfolioEntry.get_details():
@@ -63,14 +114,18 @@ class Account:
         for portfolioEntry in pybindAccount.get_portfolio():
             self.portfolio.append(PortfolioEntry(portfolioEntry))
 
+# Request models
 class AuthRequest(BaseModel):
     username: str
     password: str
 
+# Init Controller and 1000 values for each stock.
 c = Controller()
 
+# Init FastAPI
 api = FastAPI()
 
+# Define endpoint for reading all stocks.
 @api.get("/stocks")
 async def get_stocks():
     try:
@@ -84,7 +139,8 @@ async def get_stocks():
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
+# Define endpoint for reading stock details by id.
 @api.get("/stocks/{stockId}")
 async def get_stock(stockId: str):
     try:
@@ -92,6 +148,7 @@ async def get_stock(stockId: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for buying a stock, auth is required.
 @api.post("/stocks/{stockId}/buy")
 async def buy_stock(stockId: str, quantity: float, request: Request):
     try:
@@ -99,6 +156,7 @@ async def buy_stock(stockId: str, quantity: float, request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for selling a stock, auth is required.
 @api.post("/stocks/{stockId}/sell")
 async def sell_stock(stockId: str, quantity: float, request: Request):
     try:
@@ -106,13 +164,16 @@ async def sell_stock(stockId: str, quantity: float, request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for reading account information including the portfolio, auth is required.
 @api.get("/accounts/me")
 async def get_account(request: Request):
     try:
-        return Account(c.get_account(get_auth_token(request)))
+        account = Account(c.get_account(get_auth_token(request)))
+        return account;
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for logging in, returns a bearer token.
 @api.post("/accounts/login")
 async def login(request: AuthRequest):
     try:
@@ -122,6 +183,7 @@ async def login(request: AuthRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for signing in, returns a bearer token.
 @api.post("/accounts/new")
 async def new(request: AuthRequest):
     try:
@@ -131,6 +193,7 @@ async def new(request: AuthRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for depositing money, auth is required.
 @api.post("/accounts/me/deposit")
 async def deposit(amount: float, request: Request):
     try:
@@ -138,6 +201,7 @@ async def deposit(amount: float, request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+# Define endpoint for withdrawing money, auth is required.
 @api.post("/accounts/me/withdraw")
 async def withdraw(amount: float, request: Request):
     try:
@@ -146,5 +210,6 @@ async def withdraw(amount: float, request: Request):
         raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == '__main__':
+    start_thread(update_stocks, None, None)
     this_python_file = os.path.basename(__file__)[:-3]
     instance = uvicorn.run(f"{this_python_file}:api", host="127.0.0.1", port=8000, log_level="info", reload=True)
