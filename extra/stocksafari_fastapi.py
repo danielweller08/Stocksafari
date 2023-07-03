@@ -22,6 +22,9 @@ import numpy as np
 import threading
 import time
 
+# Init Controller
+c = Controller()
+
 # Method to extract and format the Authorization header.
 def get_auth_token(request: Request):
     auth_header = request.headers.get('authorization')
@@ -56,7 +59,7 @@ def update_stocks(args, kwargs):
 
             print("["+ str(i) +"] New set of values added")
 
-            time.sleep(2) # Sleep a sec before updating the next values.
+            time.sleep(6) # Sleep a sec before updating the next values.
 
 # Method to start a background thread.
 def start_thread(function_name, *args, **kwargs):
@@ -119,8 +122,7 @@ class AuthRequest(BaseModel):
     username: str
     password: str
 
-# Init Controller and 1000 values for each stock.
-c = Controller()
+start_thread(update_stocks, None, None)
 
 # Init FastAPI
 api = FastAPI()
@@ -210,6 +212,5 @@ async def withdraw(amount: float, request: Request):
         raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == '__main__':
-    start_thread(update_stocks, None, None)
     this_python_file = os.path.basename(__file__)[:-3]
     instance = uvicorn.run(f"{this_python_file}:api", host="127.0.0.1", port=8000, log_level="info", reload=True)
