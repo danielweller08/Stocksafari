@@ -35,6 +35,9 @@ namespace StockSafari {
             /// @return The percentage the stock has increased its value with.
             double get_percental_increase() const;
 
+            /// @brief Gets a value indicating whether all of the below stocks have been sold.
+            bool get_sold() const;
+
         private:
             /// @brief Stock
             Stock& _stock;

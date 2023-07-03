@@ -50,6 +50,7 @@ class PortfolioEntry:
     def __init__(self, pybindPortfolioEntry):
         self.total_increase = pybindPortfolioEntry.get_total_increase()
         self.percental_increase = pybindPortfolioEntry.get_percental_increase()
+        self.sold = pybindPortfolioEntry.get_sold()
         self.stock = Stock(pybindPortfolioEntry.get_stock())
         self.details = []
         for detail in pybindPortfolioEntry.get_details():
@@ -115,7 +116,8 @@ async def sell_stock(stockId: str, quantity: float, request: Request):
 @api.get("/accounts/me")
 async def get_account(request: Request):
     try:
-        return Account(c.get_account(get_auth_token(request)))
+        account = Account(c.get_account(get_auth_token(request)))
+        return account;
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
