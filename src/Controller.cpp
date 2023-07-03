@@ -41,111 +41,128 @@ namespace StockSafari {
     }
 
     Stock& Controller::set_stockValue(string stockId, double value) {
-        get_stock(stockId).add_value(StockValue(value));
+        get_stock(stockId).add_value(value);
         return get_stock(stockId);
     }
 
-    Account& Controller::buy_stock(string username, string stockId, double quantity, string token) {
-        string decoded_username = try_decode_token(token);
+    Account& Controller::buy_stock(string stockId, double quantity, string token) {
+        string username = try_decode_token(token);
 
-        if (username != decoded_username) {
-            throw invalid_argument("Du kannst nur für dich Stocks kaufen.");
+        // Check if quantity is negative.
+        if (quantity <= 0) {
+            throw invalid_argument("Die angebene Menge ist nicht zulässig");
         }
 
-        // Check if balance is greater equal than the wanted quantity
-        if(get_account(username, token).get_balance() >= (quantity * get_stock(stockId).get_value()) ) {
-            //  Created AccountStock with parameters
-            AccountStock account_stock = AccountStock(get_stock(stockId), quantity);
+        // Get the account.
+        Account& account = get_account(token);
 
-            // stock is put into Portfolio
-            get_account(username, token).add_stock(account_stock);
+        // Get the stock.
+        Stock& stock = get_stock(stockId);
 
-            // Reduce balance by subtracting the value from it
-            get_account(username, token).set_balance(get_account(username, token).get_balance() - (quantity * get_stock(stockId).get_value()));
-
-            return get_account(username, token);
+        // Check if accounts balance is sufficient.
+        if (!(account.get_balance() >= (quantity * stock.get_value()))) {
+            throw invalid_argument("Dein Guthaben reicht für diesen Kauf nicht aus.");
         }
-        else {
-            throw invalid_argument("Balance reicht nicht aus um gewünschten Stock zu kaufen.");
 
+        // Check if account already owns that stock.
+        bool ownsStock = false;
+        for (PortfolioEntry& portfolioEntry: account.get_portfolio()) {
+            if (portfolioEntry.get_stock().get_stockId() == stockId) {
+                // Account owns that stock.
+                ownsStock = true;
+
+                // Add a new detail.
+                portfolioEntry.add_detail(PortfolioEntryDetail(stock.get_value(), quantity));
+
+                break;
+            }
         }
-        
+
+        if (!ownsStock) {
+            // Account does not own the stock.
+            account.add_portfolioEntry(stock, quantity);
+        }
+
+        // Adjust the accounts balance.
+        account.set_balance(account.get_balance() - (stock.get_value() * quantity));
+
+        return account;
     }
 
-    Account& Controller::sell_stock(string username, string stockId, double quantity, string token) {
-        string decoded_username = try_decode_token(token);
+    Account& Controller::sell_stock(string stockId, double quantity, string token) {
+        string username = try_decode_token(token);
 
-        if (username != decoded_username) {
-            throw invalid_argument("Du kannst nur deine eigenen Stocks verkaufen.");
+        // Check if quantity is negative.
+        if (quantity <= 0) {
+            throw invalid_argument("Die angebene Menge ist nicht zulässig");
         }
 
-        // Iterieren durch stocks des accounts  
-        for(auto& acc_stock : get_account(username, token).get_portfolio()) {
-            // Nur noch nicht verkaufte Stocks können verkauft werden
-            if(acc_stock.get_sold() != true) {
+        // Get the account.
+        Account& account = get_account(token);
 
-                if( stockId == acc_stock.get_stock().get_stockId() ) {
+        // Get the stock.
+        Stock& stock = get_stock(stockId);
 
-                    // Alles verkaufen?
-                    if(acc_stock.get_quantity() == quantity) {
-                        
+        // Check if account owns the stock.
+        for (PortfolioEntry& portfolioEntry : account.get_portfolio()) {
+            if (portfolioEntry.get_stock().get_stockId() == stockId) {
+                // Stock found.
 
-                        // 	1. AccountStock Sold auf true setzen, SellValue, SellDate usw.
-
-                        acc_stock.set_sold(true);
-                        acc_stock.set_sellDate(std::chrono::system_clock::now());
-                        acc_stock.set_sellValue(get_stock(stockId).get_value());
-
-                        // 2. Balance erhöhen
-                        get_account(username, token).set_balance(get_account(username, token).get_balance() + (quantity * get_stock(stockId).get_value() ) );
-                        return get_account(username, token);
-                    }
-                    // Nur einen Teil verkaufen?
-                    else if (acc_stock.get_quantity() > quantity) {
-                                    
-                        // 	1. Neuen AccountStock anlegen
-
-                        AccountStock acc = AccountStock(get_stock(stockId), quantity);
-
-                        // 		- Bekommt verkaufte Quantity mit aktueller Value als SellValue
-
-                        acc.set_sellValue(get_stock(stockId).get_value());
-                        acc.set_sold(true);
-                        acc.set_sellDate(std::chrono::system_clock::now());
-                        acc.set_buyDate(acc_stock.get_buyDate());
-                        acc.set_buyValue(acc_stock.get_buyValue());
-
-                        // 	2. Alter AccountStock bekommt reduzierte Quantity
-
-                        acc_stock.set_quantity(acc_stock.get_quantity() - quantity);
-
-
-                        // 3. Balance erhöhen
-                        get_account(username, token).set_balance( get_account(username, token).get_balance() + quantity * get_stock(stockId).get_value());
-
-                        // Verkaufter Stock wird dem portfolio hinzugefügt
-                        get_account(username, token).add_stock(acc);
-
-                        return get_account(username, token);
-                    }
-                    else {
-                        throw invalid_argument("Es kann nicht so viel von diesem Stock verkauft werden.");
+                // Check if account stock quantity is sufficient.
+                double total_quantity = 0;
+                for (PortfolioEntryDetail detail : portfolioEntry.get_details()) {
+                    if (!detail.get_sold()) {
+                        total_quantity += detail.get_quantity();
                     }
                 }
-                else {
-                    throw invalid_argument("Du besitzt diesen stock gar nicht.");
+
+                if (total_quantity < quantity) {
+                    throw invalid_argument("Die angegebene Menge liegt über der Menge, die sie besitzen.");
+                }
+
+                // Iterate through and sell as many details as needed.
+                vector<PortfolioEntryDetail> entriesToAdd = {}; // This variable is needed since we are not allowed to modify the vector we are currently iterating.
+                for (PortfolioEntryDetail& detail : portfolioEntry.get_details()) {
+                    if (!detail.get_sold()) {
+                        if (detail.get_quantity() <= quantity) {
+                            detail.sell(stock.get_value());
+                        }
+                        else {
+                            // Create a new sold detail.
+                            PortfolioEntryDetail newDetail = PortfolioEntryDetail(detail.get_buyValue(), quantity);
+                            newDetail.set_buyDate(detail.get_buyDate());
+                            newDetail.sell(stock.get_value());
+                            entriesToAdd.push_back(newDetail);
+
+                            // Update quantity of the existing detail.
+                            detail.set_quantity(detail.get_quantity() - quantity);
+                        }
+
+                        // Reduce the account balance.
+                        account.set_balance(account.get_balance() + (stock.get_value() * detail.get_quantity()));
+
+                        // Update the quantity.
+                        quantity -= detail.get_quantity();
+
+                        // Check if everything is sold.
+                        if (quantity <= 0) {
+                            // Add the entries.
+                            for (auto entry : entriesToAdd) {
+                                portfolioEntry.add_detail(entry);
+                            }
+                            return account;
+                        }
+                    }
                 }
             }
         }
-        throw invalid_argument("Keine Stocks im portfolio wurden gefunden.");
+
+        // Stock not found.
+        throw invalid_argument("'" + stockId + "' konnte in deinem Portfolio nicht gefunden werden.");
     }
 
-    Account& Controller::get_account(string username, string token) {
-        string usernameToken = try_decode_token(token);
-
-        if (username != usernameToken) {
-            throw invalid_argument("Du darfst nur deinen eigenen Account einsehen.");
-        }
+    Account& Controller::get_account(string token) {
+        string username = try_decode_token(token);
 
         for (int i = 0; i < _accounts.size(); i++) {
             if (_accounts[i].get_username() == username) {
@@ -155,26 +172,14 @@ namespace StockSafari {
         throw invalid_argument("Dein Account konnte nicht gefunden werden.");
     }
 
-    Account& Controller::deposit(string username, double amount, string token) {
-        string decoded_username = try_decode_token(token);
-
-        if (username != decoded_username) {
-            throw invalid_argument("Du kannst nur bei deinem eigenen Konto Guthaben aufladen.");
-        }
-
-        Account& account = get_account(username, token);
+    Account& Controller::deposit(double amount, string token) {
+        Account& account = get_account(token);
         account.set_balance(account.get_balance() + amount);
         return account;   
     }
 
-    Account& Controller::withdraw(string username, double amount, string token) {
-        string decoded_username = try_decode_token(token);
-
-        if (username != decoded_username) {
-            throw invalid_argument("Du kannst nur bei deinem eigenen Konto Guthaben auszahlen.");
-        }
-
-        Account& account = get_account(username, token);
+    Account& Controller::withdraw(double amount, string token) {
+        Account& account = get_account(token);
         if (account.get_balance() < amount) {
             throw invalid_argument("Du hast nicht genug Guthaben!");
         }

@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-#include <stocksafari/AccountStock.hpp>
+#include <stocksafari/PortfolioEntry.hpp>
 
 #pragma once
 
@@ -21,8 +21,8 @@ namespace StockSafari {
             const double get_balance() { return _balance; }
             void set_balance(double value) { _balance = value; }
 
-            std::vector<AccountStock>& get_portfolio() { return _portfolio; }
-            void add_stock(AccountStock value) { _portfolio.push_back(value); }
+            std::vector<PortfolioEntry>& get_portfolio() { return _portfolio; }
+            void add_portfolioEntry(Stock& stock, double quantity) { _portfolio.push_back(PortfolioEntry(stock, quantity)); }
 
         private:
             /// @brief Username
@@ -34,8 +34,8 @@ namespace StockSafari {
             /// @brief Account balance.
             double _balance;
 
-            /// @brief Account portfolio entries.
-            std::vector<AccountStock> _portfolio;
+            /// @brief Portfolio.
+            std::vector<PortfolioEntry> _portfolio;
 
     };
 }

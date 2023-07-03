@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include <stocksafari/Account.hpp>
 #include <stocksafari/Stock.hpp>
-#include <stocksafari/StockValue.hpp>
 
 #pragma once
 
@@ -20,15 +19,15 @@ namespace StockSafari {
 
             Stock& set_stockValue(string stockId, double value);
 
-            Account& buy_stock(string username, string stockId, double quantity, string token);
+            Account& buy_stock(string stockId, double quantity, string token);
 
-            Account& sell_stock(string username, string stockId, double quantity, string token);
+            Account& sell_stock(string stockId, double quantity, string token);
 
-            Account& get_account(string username, string token);
+            Account& get_account(string token);
 
-            Account& deposit(string username, double amount, string token);
+            Account& deposit(double amount, string token);
 
-            Account& withdraw(string username, double amount, string token);
+            Account& withdraw(double amount, string token);
 
             string registerAccount(string username, string password);
 
