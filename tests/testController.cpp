@@ -38,7 +38,7 @@ TEST(ControllerTest, Deposit_Works) {
     Controller c;
     std::string token = c.registerAccount("User", "password");
 
-    EXPECT_NO_THROW(c.deposit("User", 100, token));
+    EXPECT_NO_THROW(c.deposit(100, token));
 
     ASSERT_EQ(100, c.get_account(token).get_balance());
 }
@@ -47,8 +47,8 @@ TEST(ControllerTest, Withdraw_Works) {
     Controller c;
     std::string token = c.registerAccount("User", "password");
 
-    c.deposit("User", 100, token);
-    EXPECT_NO_THROW(c.withdraw("User", 50, token));
+    c.deposit(100, token);
+    EXPECT_NO_THROW(c.withdraw(50, token));
 
     ASSERT_EQ(50, c.get_account(token).get_balance());
 }
@@ -57,8 +57,8 @@ TEST(ControllerTest, Withdraw_LowBalance_Throws) {
     Controller c;
     std::string token = c.registerAccount("User", "password");
 
-    c.deposit("User", 50, token);
-    ASSERT_ANY_THROW(c.withdraw("User", 100, token));
+    c.deposit(50, token);
+    ASSERT_ANY_THROW(c.withdraw(100, token));
 }
 
 TEST(ControllerTest, BuyStock_Works) {
@@ -67,7 +67,7 @@ TEST(ControllerTest, BuyStock_Works) {
 
     c.set_stockValue("APPL", 10);
 
-    c.deposit("User", 100, token);
+    c.deposit(100, token);
     EXPECT_NO_THROW(c.buy_stock("APPL", 10, token));
 
     auto portfolio = c.get_account(token).get_portfolio();
@@ -87,7 +87,7 @@ TEST(ControllerTest, BuyStock_DecreasesBalance) {
 
     c.set_stockValue("APPL", 10);
 
-    c.deposit("User", 100, token);
+    c.deposit(100, token);
     EXPECT_NO_THROW(c.buy_stock("APPL", 10, token));
 
     ASSERT_EQ(0, c.get_account(token).get_balance());
@@ -108,7 +108,7 @@ TEST(ControllerTest, SellStock_Works) {
 
     c.set_stockValue("APPL", 10);
 
-    c.deposit("User", 100, token);
+    c.deposit(100, token);
 
     c.buy_stock("APPL", 10, token);
 
@@ -127,7 +127,7 @@ TEST(ControllerTest, SellStock_Partially_Works) {
 
     c.set_stockValue("APPL", 10);
 
-    c.deposit("User", 100, token);
+    c.deposit(100, token);
 
     c.buy_stock("APPL", 10, token);
 

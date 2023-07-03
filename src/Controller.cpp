@@ -143,25 +143,13 @@ namespace StockSafari {
         throw invalid_argument("Dein Account konnte nicht gefunden werden.");
     }
 
-    Account& Controller::deposit(string username, double amount, string token) {
-        string decoded_username = try_decode_token(token);
-
-        if (username != decoded_username) {
-            throw invalid_argument("Du kannst nur bei deinem eigenen Konto Guthaben aufladen.");
-        }
-
+    Account& Controller::deposit(double amount, string token) {
         Account& account = get_account(token);
         account.set_balance(account.get_balance() + amount);
         return account;   
     }
 
-    Account& Controller::withdraw(string username, double amount, string token) {
-        string decoded_username = try_decode_token(token);
-
-        if (username != decoded_username) {
-            throw invalid_argument("Du kannst nur bei deinem eigenen Konto Guthaben auszahlen.");
-        }
-
+    Account& Controller::withdraw(double amount, string token) {
         Account& account = get_account(token);
         if (account.get_balance() < amount) {
             throw invalid_argument("Du hast nicht genug Guthaben!");

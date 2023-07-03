@@ -25,9 +25,9 @@ namespace StockSafari {
 
             Account& get_account(string token);
 
-            Account& deposit(string username, double amount, string token);
+            Account& deposit(double amount, string token);
 
-            Account& withdraw(string username, double amount, string token);
+            Account& withdraw(double amount, string token);
 
             string registerAccount(string username, string password);
 

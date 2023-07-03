@@ -14,8 +14,8 @@ int main() {
 
     string token = c.registerAccount("Damyan", "1234");
 
-    c.deposit("Damyan", 500, token);
-    c.withdraw("Damyan", 1, token);
+    c.deposit(500, token);
+    c.withdraw(1, token);
 
     // Token test.
     token = c.generate_token("Test_Username");
