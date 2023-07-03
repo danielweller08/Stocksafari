@@ -31,6 +31,7 @@ PYBIND11_MODULE(stocksafari, m) {
         .def("get_sold", &PortfolioEntryDetail::get_sold);
 
     py::class_<Stock>(m, "Stock")
+        .def("get_increase", &Stock::get_increase)
         .def("get_name", &Stock::get_name)
         .def("get_stockId", &Stock::get_stockId)
         .def("get_value", &Stock::get_value)

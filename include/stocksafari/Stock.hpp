@@ -33,7 +33,10 @@ namespace StockSafari {
 
             /// @brief Adds a new value to the top of the value history.
             /// @param value Value to be added.
-            void add_value(double value) { _values.push_back(value); };
+            void add_value(double value) { _values.push_back(value); }
+
+            /// @brief Gets the tendency of the stock to increase.
+            double get_increase() const { return _increase; }
 
         private:
             /// @brief Id
