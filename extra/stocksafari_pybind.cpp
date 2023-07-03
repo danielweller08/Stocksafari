@@ -15,13 +15,18 @@ PYBIND11_MODULE(stocksafari, m) {
         .def("get_portfolio", &Account::get_portfolio)
         .def("get_username", &Account::get_username);
 
-    py::class_<AccountStock>(m, "AccountStock")
-        .def("get_buyDate", &AccountStock::get_buyDate)
-        .def("get_buyValue", &AccountStock::get_buyValue)
-        .def("get_quantity", &AccountStock::get_quantity)
-        .def("get_sellDate", &AccountStock::get_sellDate)
-        .def("get_sold", &AccountStock::get_sold)
-        .def("get_stock", &AccountStock::get_stock);
+    py::class_<PortfolioEntry>(m, "PortfolioEntry")
+        .def("get_details", &PortfolioEntry::get_details)
+        .def("get_percental_increase", &PortfolioEntry::get_percental_increase)
+        .def("get_total_increase", &PortfolioEntry::get_total_increase);
+
+    py::class_<PortfolioEntryDetail>(m, "PortfolioEntryDetail")
+        .def("get_buyDate", &PortfolioEntryDetail::get_buyDate)
+        .def("get_buyValue", &PortfolioEntryDetail::get_buyValue)
+        .def("get_quantity", &PortfolioEntryDetail::get_quantity)
+        .def("get_sellDate", &PortfolioEntryDetail::get_sellDate)
+        .def("get_sellValue", &PortfolioEntryDetail::get_sellValue)
+        .def("get_sold", &PortfolioEntryDetail::get_sold);
 
     py::class_<Stock>(m, "Stock")
         .def("get_name", &Stock::get_name)

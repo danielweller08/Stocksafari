@@ -1,5 +1,4 @@
 #include <stocksafari/Stock.hpp>
-#include <stocksafari/AccountStock.hpp>
 #include <stocksafari/Account.hpp>
 #include <stocksafari/Controller.hpp>
 #include <iostream>
