@@ -14,6 +14,18 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     on_tabWidget_currentChanged(0);
+
+
+    QHBoxLayout portfolioHeaderLayout = QHBoxLayout();
+    QLabel portfolioHeaderLabel = QLabel();
+    portfolioHeaderLabel.setText("Mein Portfolio");
+    QFont font = portfolioHeaderLabel.font();
+    font.setPointSize(20);
+    portfolioHeaderLabel.setFont(font);
+
+    portfolioHeaderLayout.addWidget(&portfolioHeaderLabel);
+
+    ui->vl_Portfolio->addWidget(&portfolioHeaderLayout);
 }
 
 MainWindow::~MainWindow()

@@ -36,6 +36,11 @@ namespace StockSafari {
             }
         }
 
+        // Check if total_costs are 0.
+        if (total_costs == 0.0) {
+            return 0.0;
+        }
+
         // Divide increase with total costs and multiply by 100 to get percentage value.
         return (get_total_increase() / total_costs) * 100;
     }

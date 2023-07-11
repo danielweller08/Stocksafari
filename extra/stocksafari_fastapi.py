@@ -16,22 +16,23 @@ except ImportError as e:
 from stocksafari import Controller
 import os
 from fastapi import FastAPI, Request, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 import numpy as np
 import threading
 import time
 
-# Init Controller
-c = Controller()
-
 # Method to extract and format the Authorization header.
 def get_auth_token(request: Request):
     auth_header = request.headers.get('authorization')
     return auth_header.removeprefix('Bearer ')
 
+# Init Controller
+c = Controller()
+
 def update_stocks(args, kwargs):
-    global c
+    # c = args[0]
 
     # Generate 999 stock values each initially
     for stock in c.get_stocks():
@@ -42,12 +43,11 @@ def update_stocks(args, kwargs):
         for i in kurs:
             c.set_stockValue(stock.get_stockId(), np.round(i, 2))
 
-    print("[999] New set of values added")
-
     stockCourses = []
     while True:
         # Update the stockCourses with 1000 new values per stock.
         for stock in c.get_stocks():
+
             start = stock.get_value()
             drift = stock.get_increase() * 0.2
             kurs = kursverlauf(drift, 0.8, 0.001, start, 1000)
@@ -56,8 +56,6 @@ def update_stocks(args, kwargs):
         for i in range(1000):
             for j in range(len(c.get_stocks())):
                 c.set_stockValue(c.get_stocks()[j].get_stockId(), np.round(stockCourses[j][i], 2))
-
-            print("["+ str(i) +"] New set of values added")
 
             time.sleep(6) # Sleep a sec before updating the next values.
 
@@ -126,6 +124,11 @@ start_thread(update_stocks, None, None)
 
 # Init FastAPI
 api = FastAPI()
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*']
+)
 
 # Define endpoint for reading all stocks.
 @api.get("/stocks")

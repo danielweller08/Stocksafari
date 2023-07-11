@@ -63,7 +63,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabAktien">
        <property name="enabled">
@@ -100,6 +100,17 @@
        <attribute name="title">
         <string>Portfolio</string>
        </attribute>
+       <widget class="QWidget" name="verticalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>-1</y>
+          <width>781</width>
+          <height>491</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="vl_Portfolio"/>
+       </widget>
       </widget>
      </widget>
     </item>
