@@ -127,7 +127,9 @@ api = FastAPI()
 
 api.add_middleware(
     CORSMiddleware,
-    allow_origins=['*']
+    allow_origins=['*'],
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 # Define endpoint for reading all stocks.

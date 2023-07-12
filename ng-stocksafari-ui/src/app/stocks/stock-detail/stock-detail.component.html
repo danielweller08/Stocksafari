@@ -1,0 +1,17 @@
+<div class="row my-5">
+    <div class="col-auto" style="cursor: pointer;">
+        <i class="bi bi-arrow-left fs-3 mx-4" [routerLink]="['stocks']"></i>
+    </div>
+    <div class="col">
+        <div class="d-inline-flex align-items-center">
+            <p class="fs-3 me-4">{{id}}</p>
+            <p class="fs-5 text-success">+2,91%</p>
+        </div>
+        <p class="fs-5">{{stock?.name}}</p>
+    </div>
+    <div *ngIf="isLoggedIn" class="col-md-2 d-flex justify-content-end align-items-start">
+        <button type="button" class="btn btn-primary">Kaufen</button>
+    </div>
+</div>
+
+<app-stock-detail-chart></app-stock-detail-chart>

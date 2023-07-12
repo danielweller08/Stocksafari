@@ -1,7 +1,7 @@
 <div class="my-5">
     <!-- Stock Cards TODO: Gleichmäßige Verteilung der Texte -->
     <ng-template ngFor let-stock [ngForOf]="stocks">
-        <div class="card my-3 stock-card">
+        <div class="card my-3 stock-card" [routerLink]="['/stocks', stock.stockId]">
             <!-- <div class="card-body d-flex justify-content-between align-items-center px-4"> -->
             <div class="card-body px-4">
                 <div class="row">
