@@ -11,14 +11,14 @@ Unit tests are written for every C++ method.
 1. Execute command in any terminal: 
 
 
-    sudo apt-get install curl
-    sudo apt update
-    sudo apt install nodejs
-    sudo apt install npm
-    curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash
-    sudo apt-get install -y nodejs
-    sudo npm install -g @angular/cli
+sudo apt-get install curl
+sudo apt update
+sudo apt install nodejs
+sudo apt install npm
+curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash
+sudo apt-get install -y nodejs
+sudo npm install -g @angular/cli
 
 2. Write these commands in console of directory ng-stocksafari-ui:
 
