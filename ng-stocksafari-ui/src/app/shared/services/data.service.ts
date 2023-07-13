@@ -19,13 +19,18 @@ export class DataService {
   private token: string | null = sessionStorage.getItem("token");
 
   constructor(private _httpClient: HttpClient) {
+    // Refresh the stocks every 10 seconds.
     setInterval(() => {
       this.getStocks();
     }, 5000);
 
+    // Get the stocks once on startup.
     this.getStocks();
   }
 
+  /**
+   * Gets the stocks from the api and writes them as new value to _stocks.
+   */
   getStocks() {
     this._httpClient.get<Stock[]>(this.baseUrl + "/stocks").subscribe({
         next: (data) => {
@@ -38,6 +43,10 @@ export class DataService {
     );
   }
 
+  /**
+   * Get a specific stock by id. Writes it as new value to _stock.
+   * @param id id of the stock.
+   */
   getStock(id: string) {
     this._httpClient.get<Stock>(`${this.baseUrl}/stocks/${id}`).subscribe({
         next: (data) => {
@@ -50,6 +59,11 @@ export class DataService {
     );
   }
 
+  /**
+   * Buys the given stock and refreshes the account state.
+   * @param id id of the stock to buy.
+   * @param quantity amount of stocks to buy.
+   */
   async buyStock(id: string, quantity: number) {
     if (!this._isLoggedIn.value) {
       this._errorToastMessage.next("Du kannst nur Stocks kaufen, wenn du eingeloggt bist.");
@@ -77,6 +91,11 @@ export class DataService {
       });
   }
 
+  /**
+   * Sells the given stock and refreshes the account state.
+   * @param id id of the stock to sell.
+   * @param quantity amount of stocks to sell.
+   */
   async sellStock(id: string, quantity: number) {
     if (!this._isLoggedIn.value) {
       this._errorToastMessage.next("Du kannst nur Stocks verkaufen, wenn du eingeloggt bist.");
@@ -104,6 +123,10 @@ export class DataService {
       });
   }
 
+  /**
+   * Deposits the given amount to the account and refreshes the account state.
+   * @param amount Amount of money to deposit.
+   */
   async deposit(amount: number) {
     if (!this._isLoggedIn.value) {
       this._errorToastMessage.next("Du kannst nur Guthaben aufladen, wenn du eingeloggt bist.");
@@ -124,6 +147,10 @@ export class DataService {
       });
   }
 
+  /**
+   * Withdraws the given amount to the account and refreshes the account state.
+   * @param amount Amount of money to withdraw.
+   */
   async withdraw(amount: number) {
     if (!this._isLoggedIn.value) {
       this._errorToastMessage.next("Du kannst nur Guthaben auszahlen, wenn du eingeloggt bist.");
@@ -150,6 +177,12 @@ export class DataService {
       });
   }
 
+  /**
+   * Logs in or registers user with the given username and password.
+   * @param method login or register
+   * @param username username
+   * @param password password
+   */
   async loginOrRegister(method: string, username: string, password: string) {
     if (method == "register") method = "new"; // Register endpoint suffix is 'new'.
 
@@ -177,6 +210,9 @@ export class DataService {
       });
   }
 
+  /**
+   * Gets the current state of the logged in user account.
+   */
   async getAccount() {
     if (this.token != null) {
       // Get the account information.
@@ -189,6 +225,9 @@ export class DataService {
     }
   }
 
+  /**
+   * Logs out the currently logged in user.
+   */
   logout() {
     sessionStorage.removeItem("token");
     this._isLoggedIn.next(false);
