@@ -4,7 +4,8 @@
 using namespace std;
 
 namespace StockSafari {
-
+    /// @brief Total increase of stock 
+    /// @return Increase as a number
     double PortfolioEntry::get_total_increase() const {
         double total_costs = 0;
         double total_quantity = 0;
@@ -25,6 +26,8 @@ namespace StockSafari {
         return current_costs - total_costs;
     }
 
+    /// @brief Percental increase of stocks bought
+    /// @return Increase in percent
     double PortfolioEntry::get_percental_increase() const {
         double total_costs = 0;
 
@@ -45,6 +48,8 @@ namespace StockSafari {
         return (get_total_increase() / total_costs) * 100;
     }
 
+    /// @brief Find active Stocks 
+    /// @return True for no active stocks found
     bool PortfolioEntry::get_sold() const {
         for (PortfolioEntryDetail detail: _details) {
             if (detail.get_sold() == false) {
