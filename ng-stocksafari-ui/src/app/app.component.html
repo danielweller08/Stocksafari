@@ -12,7 +12,7 @@
     <ng-template #loggedIn>
       <div class="d-flex flex-column align-items-end">
         <p class="fs-5 mb-2">Willkommen, <b>{{account?.username}}</b></p>
-        <p class="mb-2">Guthaben: {{account?.balance | currency:'EUR':'symbol':'1.2-2':'de'}}</p>
+        <a class="mb-2" [routerLink]="['/portfolio']">Guthaben: {{account?.balance | currency:'EUR':'symbol':'1.2-2':'de'}}</a>
         <button type="button" class="btn btn-outline-secondary" (click)="logout()">Ausloggen</button>
       </div>
     </ng-template>
@@ -23,7 +23,7 @@
     <li class="nav-item">
       <a id="stocksTab" class="nav-link active" [routerLink]="['stocks']">Alle Aktien</a>
     </li>
-    <li class="nav-item">
+    <li *ngIf="isLoggedIn" class="nav-item">
       <a id="portfolioTab" class="nav-link" [routerLink]="['portfolio']">Portfolio</a>
     </li>
   </ul>
@@ -91,8 +91,15 @@
 <div class="toast-container position-fixed bottom-0 p-3" style="left: 50%; transform: translateX(-50%)">
   <div id="error-toast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
-      <div class="toast-body" id="error-toast-message">Test message</div>
+      <div class="toast-body" id="error-toast-message">Etwas ist schief gelaufen</div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close" (click)="closeErrorToast()"></button>
+    </div>
+  </div>
+
+  <div id="success-toast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="success-toast-message">Aktion erfolgreich durchgeführt</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close" (click)="closeSuccessToast()"></button>
     </div>
   </div>
 </div>

@@ -10,6 +10,6 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  dataService._toastMessage.next("Sie müssen eingeloggt sein, um auf Ihr Portfolio zugreifen zu können.");
+  dataService._errorToastMessage.next("Sie müssen eingeloggt sein, um auf Ihr Portfolio zugreifen zu können.");
   return router.parseUrl("/stocks");
 };

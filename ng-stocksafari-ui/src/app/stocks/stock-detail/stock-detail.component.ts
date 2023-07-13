@@ -19,6 +19,7 @@ export class StockDetailComponent implements OnInit {
   ngOnInit(): void {
     // Get the id from the url and load the stock details.
     this.id = this._route.snapshot.paramMap.get('id')!;
+    console.log(this._route.snapshot.paramMap);
     this._dataService.getStock(this.id);
 
     // Subscribe to the stock to get the details result and to be notified on changes.
@@ -28,5 +29,13 @@ export class StockDetailComponent implements OnInit {
 
     // Subscribe to the login state of the user.
     this._dataService._isLoggedIn.subscribe(value => this.isLoggedIn = value);
+  }
+
+  async buyStock() {
+    let quantity = (document.getElementById('buyInput') as any)!.value;
+    await this._dataService.buyStock(this.stock!.stockId, quantity);
+
+    // Hide the modal.
+    (document.getElementById(`buyModalDismiss`) as any).click();
   }
 }

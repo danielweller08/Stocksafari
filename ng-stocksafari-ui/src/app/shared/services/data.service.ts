@@ -13,7 +13,8 @@ export class DataService {
   _stock: BehaviorSubject<Stock|undefined> = new BehaviorSubject<Stock|undefined>(undefined);
   _isLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   _account: BehaviorSubject<Account | undefined> = new BehaviorSubject<Account | undefined>(undefined);
-  _toastMessage: BehaviorSubject<string> = new BehaviorSubject<string>("");
+  _errorToastMessage: BehaviorSubject<string> = new BehaviorSubject<string>("");
+  _successToastMessage: BehaviorSubject<string> = new BehaviorSubject<string>("");
   private baseUrl: string = "http://localhost:8000";
   private token: string | null = sessionStorage.getItem("token");
 
@@ -31,7 +32,7 @@ export class DataService {
           this._stocks.next(data);
         },
         error: (e) => {
-          this._toastMessage.next("Fehler beim Laden der Daten");
+          this._errorToastMessage.next("Fehler beim Laden der Daten");
         }
       }
     );
@@ -43,10 +44,110 @@ export class DataService {
           this._stock.next(data);
         },
         error: (e) => {
-          this._toastMessage.next("Fehler beim Laden der Aktie");
+          this._errorToastMessage.next("Fehler beim Laden der Aktie");
         }
       }
     );
+  }
+
+  async buyStock(id: string, quantity: number) {
+    if (!this._isLoggedIn.value) {
+      this._errorToastMessage.next("Du kannst nur Stocks kaufen, wenn du eingeloggt bist.");
+      return;
+    }
+
+    let succeeded = true;
+    await firstValueFrom(this._httpClient.post<Account>(`${this.baseUrl}/stocks/${id}/buy?quantity=${quantity}`, null, { headers: { 'Authorization': `Bearer ${this.token}` }}))
+      .catch((e) => {
+        // Exception caught.
+        console.log(e);
+        succeeded = false;
+        if (e.status == 400) {
+          this._errorToastMessage.next(e.error.detail);
+        }
+        else {
+          this._errorToastMessage.next("Fehler beim Kaufen der Aktie aufgetreten.");
+        }
+      })
+      .then(async value => {
+        if (succeeded) {
+          this._account.next(value!);
+          this._successToastMessage.next(id + " Aktie(n) erfolgreich gekauft");
+        }
+      });
+  }
+
+  async sellStock(id: string, quantity: number) {
+    if (!this._isLoggedIn.value) {
+      this._errorToastMessage.next("Du kannst nur Stocks verkaufen, wenn du eingeloggt bist.");
+      return;
+    }
+
+    let succeeded = true;
+    await firstValueFrom(this._httpClient.post<Account>(`${this.baseUrl}/stocks/${id}/sell?quantity=${quantity}`, null, { headers: { 'Authorization': `Bearer ${this.token}` }}))
+      .catch((e) => {
+        // Exception caught.
+        console.log(e);
+        succeeded = false;
+        if (e.status == 400) {
+          this._errorToastMessage.next(e.error.detail);
+        }
+        else {
+          this._errorToastMessage.next("Fehler beim Verkaufen der Aktie aufgetreten.");
+        }
+      })
+      .then(async value => {
+        if (succeeded) {
+          this._account.next(value!);
+          this._successToastMessage.next(id + " Aktie(n) erfolgreich verkauft");
+        }
+      });
+  }
+
+  async deposit(amount: number) {
+    if (!this._isLoggedIn.value) {
+      this._errorToastMessage.next("Du kannst nur Guthaben aufladen, wenn du eingeloggt bist.");
+      return;
+    }
+
+    let succeeded = true;
+    await firstValueFrom(this._httpClient.post<Account>(`${this.baseUrl}/accounts/me/deposit?amount=${amount}`, null, { headers: { 'Authorization': `Bearer ${this.token}` }}))
+      .catch((e) => {
+        // Exception caught.
+        succeeded = false;
+        this._errorToastMessage.next("Fehler bei der Aufladung aufgetreten.");
+      })
+      .then(value => {
+        if (succeeded) {
+          this._account.next(value!);
+        }
+      });
+  }
+
+  async withdraw(amount: number) {
+    if (!this._isLoggedIn.value) {
+      this._errorToastMessage.next("Du kannst nur Guthaben auszahlen, wenn du eingeloggt bist.");
+      return;
+    }
+
+    let succeeded = true;
+    await firstValueFrom(this._httpClient.post<Account>(`${this.baseUrl}/accounts/me/withdraw?amount=${amount}`, null, { headers: { 'Authorization': `Bearer ${this.token}` }}))
+      .catch((e) => {
+        // Exception caught.
+        console.log(e);
+        succeeded = false;
+        if (e.status == 400) {
+          this._errorToastMessage.next(e.error.detail);
+        }
+        else {
+          this._errorToastMessage.next("Fehler bei der Auszahlung aufgetreten.");
+        }
+      })
+      .then(value => {
+        if (succeeded) {
+          this._account.next(value!);
+        }
+      });
   }
 
   async loginOrRegister(method: string, username: string, password: string) {
@@ -69,17 +170,23 @@ export class DataService {
           sessionStorage.setItem("token", this.token!);
 
           // Get the account information.
-          await firstValueFrom(this._httpClient.get<Account>(this.baseUrl + `/accounts/me`, { headers: { 'Authorization': `Bearer ${this.token}` }}))
-            .then(
-              value => {
-                this._account.next(value);
-                console.log(value);
-              }
-            );
+          await this.getAccount();
 
           this._isLoggedIn.next(true);
         }
       });
+  }
+
+  async getAccount() {
+    if (this.token != null) {
+      // Get the account information.
+      await firstValueFrom(this._httpClient.get<Account>(this.baseUrl + `/accounts/me`, { headers: { 'Authorization': `Bearer ${this.token}` }}))
+      .then(
+        value => {
+          this._account.next(value);
+        }
+      );
+    }
   }
 
   logout() {

@@ -13,6 +13,8 @@ int main() {
 
     c.deposit(1000, token);
 
+    c.loginAccount("User", "passwort");
+
     c.buy_stock("APPL", 1, token);
     c.sell_stock("APPL", 1, token);
 

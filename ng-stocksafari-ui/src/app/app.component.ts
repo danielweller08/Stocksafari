@@ -17,22 +17,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     // Subscribe to the login state.
-    this._dataService._isLoggedIn.subscribe(value => {
-      this.isLoggedIn = value;
-      // Disable the portfolio tab if user is not logged in.
-      if (value) {
-        document.getElementById('portfolioTab')?.classList.remove("disabled");
-      }
-      else {
-        document.getElementById('portfolioTab')?.classList.add("disabled");
-      }
-    });
+    this._dataService._isLoggedIn.subscribe(value => this.isLoggedIn = value);
 
     // Subscribe to the account to display information in the top right corner.
     this._dataService._account.subscribe(value => this.account = value);
 
-    // Subscribe to the toastMessage.
-    this._dataService._toastMessage.subscribe(value => {
+    // Subscribe to the error toastMessage.
+    this._dataService._errorToastMessage.subscribe(value => {
       // Only show a toast if the value is not empty.
       if (value == "") {
         return;
@@ -41,6 +32,28 @@ export class AppComponent implements OnInit {
       // Set the message and show the toast.
       document.getElementById('error-toast-message')!.innerText = value;
       document.getElementById('error-toast')!.classList.add('d-block');
+
+      // Set a timeout to hide the toast after 10 seconds.
+      setTimeout(() => {
+        document.getElementById('error-toast')!.classList.remove('d-block');
+      }, 5000);
+    });
+
+    // Subscribe to the success toastMessage.
+    this._dataService._successToastMessage.subscribe(value => {
+      // Only show a toast if the value is not empty.
+      if (value == "") {
+        return;
+      }
+
+      // Set the message and show the toast.
+      document.getElementById('success-toast-message')!.innerText = value;
+      document.getElementById('success-toast')!.classList.add('d-block');
+
+      // Set a timeout to hide the toast after 10 seconds.
+      setTimeout(() => {
+        document.getElementById('success-toast')!.classList.remove('d-block');
+      }, 5000);
     });
 
     // Subscribe to the activated route.
@@ -76,10 +89,10 @@ export class AppComponent implements OnInit {
   loginOrRegister(method: string) {
     let succeeded = true;
     // Login or register using the API.
-    this._dataService.loginOrRegister(method, (document.getElementById(`${method}InputUsername`) as any).value, (document.getElementById('loginInputPassword') as any).value)
+    this._dataService.loginOrRegister(method, (document.getElementById(`${method}InputUsername`) as any).value, (document.getElementById(`${method}InputPassword`) as any).value)
       .catch(e => {
         // An Error occured. Show an toast the relevant information.
-        this._dataService._toastMessage.next(e);
+        this._dataService._errorToastMessage.next(e);
         succeeded = false;
       })
       .finally(
@@ -103,5 +116,9 @@ export class AppComponent implements OnInit {
 
   closeErrorToast() {
     document.getElementById('error-toast')?.classList.remove('d-block');
+  }
+
+  closeSuccessToast() {
+    document.getElementById('success-toast')?.classList.remove('d-block');
   }
 }
