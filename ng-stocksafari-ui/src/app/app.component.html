@@ -1,0 +1,105 @@
+<div class="container">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-start mt-4 mb-4">
+    <div class="d-inline-flex">
+      <img src="/assets/stocksafari.png" height="50" class="me-4">
+      <p class="fs-2 d-none d-md-block">StockSafari</p>
+    </div>
+    <div *ngIf="!isLoggedIn; else loggedIn">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Einloggen</button>
+    </div>
+    <ng-template #loggedIn>
+      <div class="d-flex flex-column align-items-end">
+        <p class="fs-5 mb-2">Willkommen, <b>{{account?.username}}</b></p>
+        <a class="mb-2" [routerLink]="['/portfolio']">Guthaben: {{account?.balance | currency:'EUR':'symbol':'1.2-2':'de'}}</a>
+        <button type="button" class="btn btn-outline-secondary" (click)="logout()">Ausloggen</button>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-underline">
+    <li class="nav-item">
+      <a id="stocksTab" class="nav-link active" [routerLink]="['stocks']">Alle Aktien</a>
+    </li>
+    <li *ngIf="isLoggedIn" class="nav-item">
+      <a id="portfolioTab" class="nav-link" [routerLink]="['portfolio']">Portfolio</a>
+    </li>
+  </ul>
+
+  <router-outlet></router-outlet>
+</div>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <i class="bi bi-person-lock me-3"></i>
+        <h5 class="modal-title">Einloggen</h5>
+        <button id="loginModalDismiss" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="loginAlertPlaceholder"></div>
+        <div class="mb-3">
+          <label for="loginInputUsername" class="form-label">Username</label>
+          <input type="text" class="form-control" id="loginInputUsername">
+        </div>
+        <div class="mb-3">
+          <label for="loginInputPassword" class="form-label">Passwort</label>
+          <input type="password" class="form-control" id="loginInputPassword">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#registerModal">Ich habe noch keinen Account</button>
+        <button type="button" class="btn btn-primary" (click)="login()">Einloggen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div id="registerModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <i class="bi bi-person-plus me-3"></i>
+        <h5 class="modal-title">Registrieren</h5>
+        <button id="registerModalDismiss" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="registerAlertPlaceholder"></div>
+        <div class="mb-3">
+          <label for="registerInputUsername" class="form-label">Username</label>
+          <input type="text" class="form-control" id="registerInputUsername">
+        </div>
+        <div class="mb-3">
+          <label for="registerInputPassword" class="form-label">Passwort</label>
+          <input type="password" class="form-control" id="registerInputPassword">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">Ich habe bereits einen Account</button>
+        <button type="button" class="btn btn-primary" (click)="register()">Registrieren</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Message Box -->
+<div class="toast-container position-fixed bottom-0 p-3" style="left: 50%; transform: translateX(-50%)">
+  <div id="error-toast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="error-toast-message">Etwas ist schief gelaufen</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close" (click)="closeErrorToast()"></button>
+    </div>
+  </div>
+
+  <div id="success-toast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="success-toast-message">Aktion erfolgreich durchgeführt</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close" (click)="closeSuccessToast()"></button>
+    </div>
+  </div>
+</div>

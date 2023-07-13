@@ -1,0 +1,18 @@
+<div class="my-4">
+    <!-- Stock Amount -->
+    <p class="text-body-secondary text-end">{{stocks.length}} Einträge</p>
+
+    <!-- Stock Cards -->
+    <ng-template ngFor let-stock [ngForOf]="stocks">
+        <div class="card my-3 stock-card" [routerLink]="['/stocks', stock.stockId]">
+            <div class="card-body px-4">
+                <div class="row">
+                    <p class="m-0 fw-bold col col-lg-2">{{stock.stockId}}</p>
+                    <p class="m-0 col">{{stock.name}}</p>
+                    <p class="m-0 col">{{stock.value | currency:'EUR':'symbol':'1.2-2':'de' }}</p>
+                    <i class="bi bi-box-arrow-up-right col-1"></i>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>

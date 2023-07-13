@@ -206,6 +206,8 @@ namespace StockSafari {
                     passwordCorrect = true;
                 }
             } 
+
+            if (found) break;
         }
 
         if (!found || !passwordCorrect) {
