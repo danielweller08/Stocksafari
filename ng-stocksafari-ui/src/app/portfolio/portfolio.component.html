@@ -15,6 +15,7 @@
     <!-- Stock Cards -->
     <ng-template ngFor let-portfolioEntry [ngForOf]="account!.portfolio">
         <div *ngIf="!portfolioEntry.sold" class="card my-3 stock-card">
+            <!-- Card -->
             <div class="card-body px-4">
                 <div class="row">
                     <p class="m-0 mb-2 mb-lg-0 fw-bold col-6 col-md-3 col-lg-1 align-self-center">{{portfolioEntry.stock.stockId}}</p>
@@ -23,6 +24,23 @@
                     <p class="m-0 mb-2 mb-md-0 col-6 col-md-3 col-lg-2 align-self-center" [class.text-success]="portfolioEntry.percental_increase > 0" [class.text-danger]="portfolioEntry.percental_increase < 0">{{(portfolioEntry.percental_increase > 0 ? '+' : '')}}{{portfolioEntry.percental_increase | number:'1.2-2':'de'}} %</p>
                     <button type="button" class="btn btn-link col-3 col-md-3 col-lg-1 align-self-center" [routerLink]="['/stocks', portfolioEntry.stock.stockId]"><i class="bi bi-box-arrow-up-right"></i></button>
                     <button type="button" class="btn btn-danger col-9 col-md-6 col-lg-2 align-self-center" data-bs-toggle="modal" data-bs-target="#sellModal" (click)="selectedStock = portfolioEntry.stock">Verkaufen</button>
+                
+                    <hr class="my-4">
+
+                    <!-- Details -->
+                    <div class="row my-3 d-none d-md-flex">
+                        <p class="m-0 col-2 fw-bold">Anzahl</p>
+                        <p class="m-0 col-5 fw-bold">Kaufwert pro Aktie</p>
+                        <p class="m-0 col-5 fw-bold">Kaufdatum</p>
+                    </div>
+
+                    <ng-template ngFor let-detail [ngForOf]="portfolioEntry.details">
+                        <div class="row my-3" *ngIf="!detail.sold">
+                            <p class="m-0 col-2">{{detail.quantity}}</p>
+                            <p class="m-0 col-5">{{detail.buyValue | currency:'EUR':'symbol':'1.2-2':'de'}}</p>
+                            <p class="m-0 col-5">{{detail.buyDate | date }}</p>
+                        </div>
+                    </ng-template>
                 </div>
             </div>
         </div>

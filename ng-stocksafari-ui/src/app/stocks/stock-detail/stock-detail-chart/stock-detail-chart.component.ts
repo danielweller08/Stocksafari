@@ -8,6 +8,7 @@ import { DataService } from 'src/app/shared/services/data.service';
   styleUrls: ['./stock-detail-chart.component.scss']
 })
 export class StockDetailChartComponent implements OnInit {
+  // Chart options structure.
   chartOptions: ChartOptions = {
     series: [{
       name: "APPL",
@@ -49,6 +50,7 @@ export class StockDetailChartComponent implements OnInit {
   constructor(private _dataService: DataService) { }
 
   ngOnInit(): void {
+    // Subscribe to the stock to set the graph.
     this._dataService._stock.subscribe(
       stock => {
         this.chartOptions.series = [

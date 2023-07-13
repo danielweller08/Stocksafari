@@ -30,6 +30,9 @@ export class PortfolioComponent implements OnInit {
     }, 5000);
   }
 
+  /**
+   * Deposit money.
+   */
   async deposit() {
     let amount = (document.getElementById('depositInput') as any)!.value;
     await this._dataService.deposit(amount);
@@ -38,6 +41,9 @@ export class PortfolioComponent implements OnInit {
     (document.getElementById(`depositModalDismiss`) as any).click();
   }
 
+  /**
+   * Withdraw money.
+   */
   async withdraw() {
     let amount = (document.getElementById('withdrawInput') as any)!.value;
     await this._dataService.withdraw(amount);
@@ -46,6 +52,10 @@ export class PortfolioComponent implements OnInit {
     (document.getElementById(`withdrawModalDismiss`) as any).click();
   }
 
+  /**
+   * Sell a stock, the amount is read from the sellInput field.
+   * @param id id of the stock.
+   */
   async sellStock(id: string) {
     let quantity = (document.getElementById('sellInput') as any)!.value;
     await this._dataService.sellStock(id, quantity);

@@ -78,14 +78,24 @@ export class AppComponent implements OnInit {
     );
   }
 
+  /**
+   * Login.
+   */
   login() {
     this.loginOrRegister('login');
   }
 
+  /**
+   * Register.
+   */
   register() {
     this.loginOrRegister('register');
   }
 
+  /**
+   * Log in or register using the values of the login or register modal.
+   * @param method login or register
+   */
   loginOrRegister(method: string) {
     let succeeded = true;
     // Login or register using the API.
@@ -105,6 +115,9 @@ export class AppComponent implements OnInit {
       );
   }
 
+  /**
+   * Logout.
+   */
   logout() {
     // Check if user is on portfolio page to redirect him.
     if (this._router.url.startsWith("/portfolio")) {
@@ -114,10 +127,16 @@ export class AppComponent implements OnInit {
     this._dataService.logout();
   }
 
+  /**
+   * Closes the error toast.
+   */
   closeErrorToast() {
     document.getElementById('error-toast')?.classList.remove('d-block');
   }
 
+  /**
+   * Closes the success toast.
+   */
   closeSuccessToast() {
     document.getElementById('success-toast')?.classList.remove('d-block');
   }
