@@ -31,6 +31,9 @@ export class StockDetailComponent implements OnInit {
     this._dataService._isLoggedIn.subscribe(value => this.isLoggedIn = value);
   }
 
+  /**
+   * Buys amounts of the selected stock.
+   */
   async buyStock() {
     let quantity = (document.getElementById('buyInput') as any)!.value;
     await this._dataService.buyStock(this.stock!.stockId, quantity);

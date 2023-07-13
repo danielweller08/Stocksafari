@@ -17,6 +17,7 @@ export class StocksComponent {
   stocks: Stock[] = [];
 
   constructor(private _dataService: DataService) {
+    // Subsribe to stock changes.
     _dataService._stocks.subscribe(
       newValue => {
         this.stocks = newValue
